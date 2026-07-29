@@ -1,0 +1,49 @@
+@use '../../../styles/tokens' as *;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: 44px;
+  padding: 10px 20px;
+  border-radius: $radius-base;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.primary {
+  background: $color-black;
+  color: $color-white;
+  box-shadow: $shadow-button-primary;
+}
+
+.secondary {
+  background: $color-white;
+  color: $color-text-muted;
+  border: 1px solid $color-text-muted;
+}
+
+.danger {
+  background: $color-white;
+  color: $color-danger;
+  border: 1px solid $color-danger;
+}
+
+// 위험 컨펌 팝업의 확인 버튼처럼 채워진 위험 실행 버튼이 필요한 경우 사용한다.
+.dangerFilled {
+  background: $color-danger;
+  color: $color-white;
+}
+
+.disabled {
+  background: $color-disabled-bg;
+  color: $color-white;
+}

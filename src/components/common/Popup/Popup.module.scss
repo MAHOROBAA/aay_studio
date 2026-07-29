@@ -1,0 +1,66 @@
+@use '../../../styles/tokens' as *;
+
+.dim {
+  position: fixed;
+  inset: 0;
+  background: $color-dim;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.card {
+  width: 360px;
+  padding: 30px;
+  border-radius: $radius-base;
+  background: $color-white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
+.brand {
+  align-self: flex-start;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-black;
+}
+
+.title {
+  margin: 0;
+  width: 300px;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-black;
+  text-align: center;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+.description {
+  margin: 0;
+  width: 300px;
+  font-size: 13px;
+  color: $color-text;
+  text-align: center;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+.actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.cancelButton {
+  flex: 0 0 140px;
+}
+
+.confirmButton {
+  flex: 1;
+}

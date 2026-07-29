@@ -1,0 +1,28 @@
+// Figma 'AAY' 파일에서 확인한 디자인 토큰
+// https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY
+
+// Color
+$color-black: #000000;
+$color-white: #ffffff;
+$color-text: #333333;
+$color-text-muted: #555555;
+$color-border: #cccccc;
+$color-disabled-bg: #cccccc;
+$color-danger: #d00000;
+$color-dim: rgba(0, 0, 0, 0.5);
+
+// Typography
+$font-family-base: 'Noto Sans KR', sans-serif;
+
+// Layout
+$header-height: 70px;
+$lnb-width: 180px;
+$desktop-width: 1280px;
+$desktop-height: 832px;
+
+// Radius
+$radius-base: 10px;
+
+// Shadow
+$shadow-header: 0px 2.667px 5.333px 0px rgba(0, 0, 0, 0.1);
+$shadow-button-primary: 0px 2.667px 1.333px 0px rgba(0, 0, 0, 0.25);

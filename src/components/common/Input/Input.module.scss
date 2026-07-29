@@ -1,0 +1,35 @@
+@use '../../../styles/tokens' as *;
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.label {
+  flex-shrink: 0;
+  width: 100px;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 13px;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+  font-family: $font-family-base;
+  font-size: 13px;
+  color: $color-text;
+
+  &::placeholder {
+    color: $color-text;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}

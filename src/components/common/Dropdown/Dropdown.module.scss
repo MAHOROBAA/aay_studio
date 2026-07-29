@@ -1,0 +1,62 @@
+@use '../../../styles/tokens' as *;
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.label {
+  flex-shrink: 0;
+  width: 100px;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.labelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.control {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.select {
+  width: 100%;
+  height: 38px;
+  padding: 0 32px 0 13px;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+  font-family: $font-family-base;
+  font-size: 13px;
+  color: $color-text;
+  background: $color-white;
+  appearance: none;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  width: 13px;
+  height: 13px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: $color-text-muted;
+}

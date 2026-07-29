@@ -1,0 +1,56 @@
+@use '../styles/tokens' as *;
+
+.home {
+  min-height: 100%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-black;
+}
+
+.cards {
+  width: 720px;
+  display: flex;
+  gap: 40px;
+}
+
+.card {
+  flex: 1;
+  height: 250px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+}
+
+.cardManual {
+  border-color: $color-black;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.cardDescription {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: $color-text;
+  text-align: center;
+  white-space: pre-line;
+}

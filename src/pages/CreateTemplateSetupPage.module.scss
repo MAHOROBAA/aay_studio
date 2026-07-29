@@ -1,0 +1,220 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 30px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 60px;
+}
+
+.content {
+  width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.introTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.introSubtitle {
+  margin: 0;
+  font-size: 14px;
+  color: $color-black;
+}
+
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 0 20px 30px;
+  border-bottom: 1px solid #dddddd;
+
+  &:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.rowLabel {
+  flex-shrink: 0;
+  width: 100px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.characterField {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.characterPreview {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dddddd;
+  background: $color-white;
+  color: $color-text-muted;
+  font-size: 13px;
+  text-align: center;
+}
+
+.characterSelect {
+  width: 200px;
+}
+
+.optionsRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.worldSelect {
+  width: 200px;
+}
+
+.chipButton {
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid $color-text-muted;
+  border-radius: $radius-base;
+  background: $color-white;
+  color: $color-text;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.chipButtonMuted {
+  @extend .chipButton;
+  border-color: #dddddd;
+}
+
+.chipIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.textareaBox {
+  width: 100%;
+  height: 150px;
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+}
+
+.textareaPlaceholder {
+  margin: 0;
+  font-size: 13px;
+  color: $color-text;
+}
+
+.textareaCounter {
+  margin: 0;
+  align-self: flex-end;
+  font-size: 13px;
+  color: $color-text;
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.stepper {
+  flex-shrink: 0;
+  width: 120px;
+  position: sticky;
+  top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.stepLabel {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-black;
+}
+
+.stepBadge {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $color-text-muted;
+  border-radius: 99px;
+  background: $color-white;
+  color: $color-text-muted;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.stepBadgeActive {
+  border: none;
+  background: $color-text-muted;
+  color: $color-white;
+}
+
+.stepConnector {
+  width: 1px;
+  height: 50px;
+  background: $color-border;
+}

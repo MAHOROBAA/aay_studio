@@ -1,0 +1,30 @@
+@use '../../../styles/tokens' as *;
+
+.header {
+  height: $header-height;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $color-white;
+  box-shadow: $shadow-header;
+}
+
+.logo {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: $color-black;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}

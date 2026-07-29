@@ -1,0 +1,111 @@
+@use '../styles/tokens' as *;
+
+.createTemplate {
+  min-height: 100%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-black;
+}
+
+.cards {
+  display: flex;
+  gap: 40px;
+}
+
+.card {
+  width: 350px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+}
+
+.cardComingSoon {
+  align-self: stretch;
+  border-color: #dddddd;
+}
+
+.cardTitle {
+  margin: 0;
+  width: 354px;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text;
+  text-align: center;
+}
+
+.cardTitleMuted {
+  margin: 0;
+  width: 354px;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+  text-align: center;
+}
+
+.cardDescription {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.platforms {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.platformsLabel {
+  margin: 0;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+  text-align: center;
+}
+
+.platformsList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.platformItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.platformIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.platformName {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: $color-text;
+}

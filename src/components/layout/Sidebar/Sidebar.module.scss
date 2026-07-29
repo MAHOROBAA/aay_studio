@@ -1,0 +1,41 @@
+@use '../../../styles/tokens' as *;
+
+.sidebar {
+  flex-shrink: 0;
+  width: $lnb-width;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid $color-border;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.navLink {
+  font-size: 18px;
+  font-weight: 500;
+  color: $color-black;
+  text-decoration: none;
+
+  &.active {
+    font-weight: 800;
+  }
+}
+
+.credit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: $radius-base;
+  background: $color-text-muted;
+  color: $color-white;
+  font-size: 13px;
+}
