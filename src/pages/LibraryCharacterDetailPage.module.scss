@@ -1,0 +1,89 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 20px 60px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 68px;
+}
+
+.content {
+  width: 850px;
+  margin: 0 auto;
+  display: flex;
+  gap: 30px;
+}
+
+.images {
+  flex-shrink: 0;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionLabel {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.representativeImage {
+  width: 280px;
+  height: 373px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dddddd;
+  background: #efefef;
+}
+
+.representativeImageLabel {
+  margin: 0;
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.referenceImages {
+  display: flex;
+  gap: 8px;
+}
+
+.referenceImage {
+  flex: 1;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dddddd;
+  background: #efefef;
+  text-align: center;
+}
+
+.referenceImageLabel {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cards {
+  display: flex;
+  gap: 20px;
+}

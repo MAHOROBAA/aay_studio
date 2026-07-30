@@ -1,0 +1,86 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.description {
+  margin: 0;
+  font-size: 16px;
+  color: $color-text-muted;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchInput {
+  flex: 1;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: $color-white;
+
+  input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    font-family: $font-family-base;
+    font-size: 13px;
+    color: $color-text;
+
+    &::placeholder {
+      color: #888888;
+    }
+  }
+}
+
+.filter {
+  width: 176px;
+  height: 38px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: $color-white;
+  color: $color-text-muted;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.sort {
+  width: 192px;
+}
+
+.filterChevron {
+  flex-shrink: 0;
+  width: 13.333px;
+  height: 13.333px;
+  color: $color-text-muted;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loadMore {
+  display: flex;
+  justify-content: center;
+}

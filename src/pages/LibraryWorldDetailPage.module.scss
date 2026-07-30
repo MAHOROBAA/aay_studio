@@ -1,0 +1,22 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 20px 60px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 68px;
+}
+
+.content {
+  width: 850px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cards {
+  display: flex;
+  gap: 20px;
+}

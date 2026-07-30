@@ -4,6 +4,10 @@
 화면 기획과 상세 정책은 [`docs/spec/aay-studio-spec.md`](docs/spec/aay-studio-spec.md)를 참고하고,
 시각적 기준은 Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`)를 참고한다.
 
+**[`docs/spec/spec-addendum.md`](docs/spec/spec-addendum.md)는 `aay-studio-spec.md` 작성 이후 추가·변경된 내용이며,
+충돌 시 이 문서가 우선한다.** 라이브러리(캐릭터·세계관·스토리), 프로젝트/채널 용어, 템플릿 Step 2의 캐릭터 생성 등을
+작업할 때는 반드시 먼저 확인한다.
+
 **"2단계 배치 진행해줘" 같은 요청을 받으면 먼저 [`docs/spec/phase2-batches.md`](docs/spec/phase2-batches.md)를 읽고
 어떤 배치가 완료됐고 다음에 뭘 해야 하는지 확인한다.** 이 문서에 없는 새로운 진행 방식을 임의로 정하지 않는다.
 

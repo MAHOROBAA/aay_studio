@@ -1,0 +1,214 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.description {
+  margin: 0;
+  font-size: 16px;
+  color: $color-text-muted;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchInput {
+  width: 300px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: $color-white;
+
+  input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    font-family: $font-family-base;
+    font-size: 13px;
+    color: $color-text;
+
+    &::placeholder {
+      color: #888888;
+    }
+  }
+}
+
+.filter {
+  width: 176px;
+  height: 38px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: $color-white;
+  color: $color-text-muted;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.sort {
+  width: 192px;
+}
+
+.filterChevron {
+  flex-shrink: 0;
+  width: 13.333px;
+  height: 13.333px;
+  color: $color-text-muted;
+}
+
+.viewToggle {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.viewButton {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #555555;
+  border-radius: 10px;
+  background: $color-white;
+  color: $color-text-muted;
+  cursor: pointer;
+}
+
+.viewButtonActive {
+  border: none;
+  background: #555555;
+  color: $color-white;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background: $color-white;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.thumbnail {
+  position: relative;
+  height: 150px;
+  background: #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnailLabel {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-text-muted;
+}
+
+.thumbnailBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}
+
+.duration {
+  position: absolute;
+  right: 17px;
+  bottom: 8px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgba(17, 17, 17, 0.72);
+  color: $color-white;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.progressTrack {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 5px;
+  border-radius: 3px;
+  background: #d2d2d2;
+}
+
+.progressFill {
+  height: 5px;
+  border-radius: 3px;
+  background: #555555;
+}
+
+.cardBody {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111111;
+}
+
+.cardMore {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: $color-text-muted;
+}
+
+.cardMeta {
+  margin: 0;
+  font-size: 11px;
+  color: #666666;
+}
+
+.cardDate {
+  margin: 0;
+  font-size: 11px;
+  color: #999999;
+}
+
+.loadMore {
+  display: flex;
+  justify-content: center;
+}

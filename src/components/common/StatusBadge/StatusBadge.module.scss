@@ -1,0 +1,27 @@
+.badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border-radius: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.done {
+  background: #555555;
+  color: #ffffff;
+}
+
+.scheduled {
+  background: #ffffff;
+  border: 1px solid #bbbbbb;
+  color: #333333;
+}
+
+.failed {
+  background: #777777;
+  color: #ffffff;
+}

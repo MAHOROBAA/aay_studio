@@ -1,0 +1,53 @@
+@use '../../../styles/tokens' as *;
+
+.row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rowStart {
+  align-items: flex-start;
+}
+
+.label {
+  flex-shrink: 0;
+  width: 100px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.labelStart {
+  padding-top: 10px;
+}
+
+.box {
+  flex: 1;
+  min-width: 0;
+  padding: 0 13px;
+  display: flex;
+  align-items: center;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+}
+
+.boxShort {
+  height: 38px;
+}
+
+.boxTall {
+  min-height: 76px;
+  padding: 13px;
+  align-items: flex-start;
+}
+
+.value {
+  margin: 0;
+  font-size: 13px;
+  color: $color-text;
+  line-height: 1.5;
+  white-space: pre-line;
+}

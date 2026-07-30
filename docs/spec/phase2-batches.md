@@ -1,8 +1,11 @@
 # 2단계(정적 화면) 배치 계획 및 진행 상황
 
 `docs/spec/aay-studio-spec.md` 11장의 **2단계: 정적 화면**은 화면 수가 많아 한 번에 진행하지 않고,
-아래처럼 배치(A~F)로 나눠 순서대로 진행한다. 새 세션에서 "배치 C 진행해줘" 같은 요청을 받으면
+아래처럼 배치(A~G)로 나눠 순서대로 진행한다. 새 세션에서 "배치 C 진행해줘" 같은 요청을 받으면
 이 문서를 기준으로 어떤 화면을 만들면 되는지 파악한다.
+
+**[`docs/spec/spec-addendum.md`](spec-addendum.md)가 `aay-studio-spec.md` 이후 추가된 내용이고, 충돌 시 우선한다.**
+특히 라이브러리 구조(영상/캐릭터/세계관/스토리 4탭)는 addendum 기준으로 배치 F에서 새로 구현했다.
 
 ## 배치 목록
 
@@ -12,8 +15,9 @@
 | B | 5.4 템플릿 선택 + 캐릭터·세계관·스토리 설정 | `/create/template`, `/create/template/setup` | `53:202`, `53:472` | 완료 |
 | C | 5.5 직접 만들기 플로우(아이디어 입력, AI 기획 확인) | `/create/manual`, `/create/manual/brief` | `5:2`, `14:119` | 완료 |
 | D | 5.6 생성 중, 5.7 검토, 5.8 게시 설정 — 템플릿·직접 만들기 공통 | `/create/settings`, `/create/generating`, `/create/review`, `/create/publish` | `63:699`, `63:905`, `63:1399`, `63:1695` | 완료 |
-| E | 5.9 라이브러리, 5.10 영상 상세 | `/library`, `/library/:videoId` | `72:194`, `97:221` | 대기 |
-| F | 5.11 마이페이지 | `/mypage` | `105:234` | 대기 |
+| E | 5.9 라이브러리 - 영상, 5.10 영상 상세 | `/library/videos`, `/library/videos/:videoId` | `72:194`, `97:221` | 완료(배치 F에서 라우트 개정) |
+| F | addendum — 라이브러리 캐릭터/세계관/스토리(목록+상세), 공통 상세 헤더 도입 | `/library/characters(+:id)`, `/library/worlds(+:id)`, `/library/stories(+:id)` | 아래 "배치 F 확인 결과" 참고 | 완료 |
+| G | 5.11 마이페이지 | `/mypage` | `105:234` | 대기 |
 
 세부 node id 매핑은 `docs/spec/figma-frame-map.md`를 함께 참고한다.
 
@@ -50,6 +54,52 @@
 - `CreateManualBriefPage`의 "생성 · 24크레딧 →" 버튼이 배치 C에서 연결되지 않은 채 남아 있던 것을 이번에
   `/create/generating`(flow: manual)로 연결해 일관성을 맞췄다.
 
+## 배치 E 확인 결과 (완료)
+
+- 라이브러리 화면(`72:194`)에는 "영상/캐릭터/세계관" 탭이 있지만, **Figma에서 "캐릭터"(`133:265`)·"세계관"(`133:444`) 탭 프레임을
+  열어보면 "영상" 탭 내용을 그대로 복사해놓은 미완성 placeholder였다**(같은 영상 카드, 같은 문구). 실제 캐릭터/세계관
+  라이브러리 디자인이 없으므로, 사용자 확인 후 "영상" 탭만 실제로 구현하고 나머지 두 탭은 비활성(disabled) 버튼으로만 넣었다.
+  나중에 실제 디자인이 나오면 그때 구현한다 — 카드 내용을 임의로 지어내지 않는다.
+- 카드 상태별 배지 색상: 게시 완료 = `#555` 배경/흰 텍스트, 예약 게시 = 흰 배경/`#bbb` 테두리/`#333` 텍스트,
+  게시 실패 = `#777` 배경/흰 텍스트. `src/components/common/StatusBadge/StatusBadge.tsx`로 공통화했다(라이브러리 카드·영상 상세 공용).
+- 라이브러리 카드의 타이포는 앱의 다른 화면과 다른 회색조를 쓴다(제목 `#111`, 메타 `#666`, 날짜 `#999`) — 기존
+  `$color-black`/`$color-text`/`$color-text-muted`(`#000`/`#333`/`#555`)와는 별개의, 이 화면 전용 값이라 토큰화하지 않고
+  페이지 스타일에 리터럴로 넣었다.
+- 검색창/필터/정렬/보기전환 버튼은 스펙 6.2가 명시한 예외(라이브러리는 공통 Dropdown/Input과 다른 형태 허용)에 해당해서
+  공통 컴포넌트를 억지로 재사용하지 않고 이 페이지 전용 스타일로 구현했다(테두리 `#d9d9d9`, radius 8px 등 기존 공통 Input/Dropdown과 다름).
+- **Figma MCP 팁**: 컴포넌트 인스턴스가 포함된 노드에 `get_design_context`를 호출하면 5분 타임아웃이 나는 경우가 있었다
+  (이 세션에서 라이브러리 탭 인스턴스, LNB 인스턴스 등에서 반복 발생). 인스턴스가 없는 하위 노드(잎 텍스트 노드 등)를
+  개별로 조회하면 빠르게 응답한다. 그래도 필요한 값(이번엔 탭 텍스트 크기)을 못 얻으면, 사용자에게 Figma에서 해당
+  컴포넌트 내부로 더블클릭해 들어가 텍스트 레이어를 직접 선택해달라고 요청하고 `nodeId` 없이 `get_design_context`를 호출한다
+  (선택된 노드를 기준으로 조회됨). 이렇게 확인한 라이브러리 탭 텍스트는 활성/비활성 모두 18px bold였다 — 겉보기(button 스타일)로
+  14px일 거라고 추측했다면 틀렸을 값이라, 반드시 이 방식으로 재확인해야 한다.
+
+## 배치 F 확인 결과 (완료) — `spec-addendum.md` 반영
+
+- 배치 E 완료 후 `spec-addendum.md`가 추가되면서 Figma에도 실제 캐릭터/세계관/스토리 라이브러리 디자인이 새로 생겼다
+  (배치 E 때는 "영상" 탭 내용을 복사한 placeholder였던 것과 다름 — 사용자가 확인해줌). node id:
+  - 캐릭터 목록 `133:265`, 캐릭터 상세 `158:310`(동일 내용의 중복 프레임 `151:395`는 사용자가 Figma에서 삭제함)
+  - 세계관 목록 `133:444`, 세계관 상세 `151:750`
+  - 스토리 목록 `151:858`, 스토리 상세 `151:990`
+- **라우트를 이번에 재구성했다**: 기존 `/library`, `/library/:videoId`를 `/library/videos`, `/library/videos/:videoId`로 옮기고,
+  `/library`는 `/library/videos`로 리다이렉트한다(사용자 요청 — 영상 탭도 다른 탭들과 대칭되는 하위 경로를 갖도록).
+  새 라우트: `/library/characters(+:characterId)`, `/library/worlds(+:worldId)`, `/library/stories(+:storyId)`.
+  페이지 파일도 `LibraryPage`/`LibraryDetailPage` → `LibraryVideosPage`/`LibraryVideoDetailPage`로 이름을 바꿨다.
+- **공통 상세 헤더 규칙**(addendum 10장)을 `src/components/common/LibraryDetailHeader/LibraryDetailHeader.tsx`로 구현했다:
+  좌측 "← OO 목록"(Button secondary), 가운데 제목(+선택적 배지), 우측 "수정"(secondary)+"삭제"(danger, 기존 Button 컴포넌트 그대로 재사용).
+  영상 상세도 이 공통 헤더로 개정해서 수정/삭제 버튼이 새로 생겼다(이전엔 없었음).
+- **`DetailField`**(`src/components/common/DetailField/DetailField.tsx`): 라벨 100px + 테두리 박스(단일/여러 줄) 패턴.
+  캐릭터/세계관/스토리 상세의 이름·설명 등 필드에 쓴다. 영상 상세의 읽기전용 필드(배경 `#f8f8f8`, 흐린 느낌)와 달리,
+  이 세 상세 화면의 필드는 Figma에서 테두리 `#333`의 일반(입력 가능해 보이는) 스타일이라 서로 다르게 구현했다 — 통일시키지 않는다.
+- **`LibraryListRow`**(`src/components/common/LibraryListRow/LibraryListRow.tsx`): 세계관·스토리 목록이 공유하는 가로형 리스트 행.
+- **캐릭터 카드 색상은 영상 카드와 다르다**: 제목 `#333`(영상은 `#111`), 설명/메타 둘 다 `#555`(영상은 `#666`/`#999` 분리),
+  카드 테두리 `#ddd`(영상은 `#d9d9d9`). 비슷해 보이는 카드라도 Figma 값을 다시 확인해야 한다는 걸 보여주는 사례.
+- 캐릭터/세계관/스토리 상세의 "관리 정보" 카드에서 마지막 항목(수정일 또는 사용 크레딧) 값이 Figma에 "YouTube에서 보기"로
+  잘못 들어있었다(영상 상세를 복제하면서 생긴 실수로 보임). 그대로 베끼지 않고 문맥에 맞는 값(날짜, 크레딧 수)으로 채웠다.
+- "새 캐릭터/세계관/스토리 만들기" 버튼은 실제 생성 팝업이 아직 없어서(addendum 4장의 새 캐릭터 생성 흐름은 3~4단계 범위)
+  다른 화면 이동 없이 비활성 상태로 뒀다 — 관련 없는 화면(템플릿 설정 등)으로 임의로 연결하지 않는다.
+- 라이브러리 카드/행의 "⋮" 메뉴, 수정/삭제 확인 팝업은 아직 클릭 동작이 없다(3단계 "팝업" 범위).
+
 ## 지금까지 정한 구현 방식(새 세션도 그대로 따를 것)
 
 - **공통 버튼**: Figma에는 `#333`/`#000` 배경 버튼이 섞여 있지만, 스펙 6.1("주요 실행: 검정 배경")과
@@ -73,3 +123,7 @@
   `src/components/common/`에 공통 컴포넌트로 있다. AI 기획 확인·검토·게시 등 정보 카드나 영상 미리보기가 필요한 화면에서 재사용한다.
 - **플로우 구분이 필요한 공유 화면**: `src/router/createFlow.ts`의 `useCreateFlow()` 훅을 사용한다.
   `navigate(path, { state: { flow: 'template' | 'manual' } })`로 넘기고 받는 쪽에서 `useCreateFlow()`로 읽는다.
+- **`StatusBadge`(영상 상태 배지)**는 `src/components/common/StatusBadge/StatusBadge.tsx`에 있다.
+  라이브러리 카드와 영상 상세 화면에서 재사용한다.
+- **라이브러리 공통 컴포넌트**: `LibraryTabs`(4탭), `LibraryDetailHeader`(뒤로가기/제목/수정·삭제), `DetailField`(라벨+박스 필드),
+  `LibraryListRow`(세계관·스토리 목록 행) — 전부 `src/components/common/`에 있다. 라이브러리 화면을 새로 만들 때 우선 재사용한다.
