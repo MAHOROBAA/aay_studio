@@ -23,8 +23,10 @@ Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`) �
 | Create - 직접 만들기 - step4 | `63:1211` | 5.7 → `/create/review`. 템플릿 플로우(`63:1399`)와 내용은 동일하고 상단에 5단계 가로 스테퍼만 추가로 있음 |
 | Create - 직접 만들기 - step5 | `63:1504` | 5.8 → `/create/publish`. 템플릿 플로우(`63:1695`)와 내용은 동일하고 상단에 5단계 가로 스테퍼만 추가로 있음 |
 | 라이브러리 - 영상 | `72:194` | 5.9 라이브러리 → `/library/videos`(구 `/library`, 배치 F에서 라우트 이전). 배치 E 완료 |
+| 라이브러리 - 영상(목록 보기) | `183:1348` | 5.9 → `/library/videos` 보기 전환(목록). 배치 F 후속 완료. 헤더/행 실측은 `195:364`/`195:401` |
 | 라이브러리 - 영상 상세 | `97:221` | 5.10 영상 상세 → `/library/videos/:videoId`(구 `/library/:videoId`). 배치 E 완료, 배치 F에서 공통 상세 헤더로 개정 |
 | 라이브러리 - 캐릭터 | `133:265` | addendum → `/library/characters`. 배치 E 때는 "영상" 탭을 복사한 placeholder였으나, addendum과 함께 실제 디자인이 생겨 배치 F에서 구현 완료 |
+| 라이브러리 - 캐릭터(목록 보기) | `183:1551` | addendum → `/library/characters` 보기 전환(목록). 배치 F 후속 완료. 헤더/행 실측은 `195:512`/`195:545` |
 | 라이브러리 - 캐릭터 상세 | `158:310` | addendum → `/library/characters/:characterId`. 배치 F 완료. (동일 내용의 중복 프레임 `151:395`는 사용자가 Figma에서 삭제함) |
 | 라이브러리 - 세계관 | `133:444` | addendum → `/library/worlds`. 배치 E 때는 placeholder였으나 배치 F에서 실제 구현 완료 |
 | 라이브러리 - 세계관 상세 | `151:750` | addendum → `/library/worlds/:worldId`. 배치 F 완료 |
@@ -45,4 +47,7 @@ Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`) �
   `docs/spec/phase2-batches.md`의 "배치 C 확인 결과" 참고.
 - "라이브러리 - 캐릭터"(`133:265`), "라이브러리 - 세계관"(`133:444`)은 배치 E 시점엔 "영상" 탭을 복사해놓은 미완성 상태였지만,
   `docs/spec/spec-addendum.md`와 함께 Figma에 실제 디자인(캐릭터 카드형, 세계관/스토리 가로 리스트형)이 추가돼 배치 F에서 구현했다.
+- "라이브러리 - 영상(목록 보기)"(`183:1348`), "라이브러리 - 캐릭터(목록 보기)"(`183:1551`)는 배치 F 이후 사용자가 Figma에
+  추가한 목록(테이블형) 화면이다. 두 페이지 모두 카드/목록 보기 토글이 실제로 동작하도록 구현했고, 세계관·스토리는
+  스펙상 보기 전환 기능이 없어 대상이 아니다.
 - 이 표는 Figma 파일이 수정되면 최신 상태가 아닐 수 있다. node id 조회가 실패하면 이 표를 맹신하지 말고 `get_metadata`로 재확인한다.
