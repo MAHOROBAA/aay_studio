@@ -1,0 +1,61 @@
+@use '../../../styles/tokens' as *;
+
+.stepper {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.stepGroup {
+  display: flex;
+  align-items: flex-start;
+  flex: 1 1 auto;
+}
+
+.stepGroupLast {
+  flex: 0 0 auto;
+}
+
+.stepItem {
+  flex-shrink: 0;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-black;
+}
+
+.badge {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $color-text-muted;
+  border-radius: 99px;
+  background: $color-white;
+  color: $color-text-muted;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.badgeActive {
+  border: none;
+  background: $color-text-muted;
+  color: $color-white;
+}
+
+.connector {
+  flex: 1 1 auto;
+  height: 1px;
+  margin-top: 10px;
+  background: $color-border;
+}

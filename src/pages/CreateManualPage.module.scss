@@ -1,0 +1,164 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 30px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.content {
+  width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-black;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rowStart {
+  align-items: flex-start;
+}
+
+.rowLabel {
+  flex-shrink: 0;
+  width: 100px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.rowLabelStart {
+  padding-top: 10px;
+}
+
+.textareaBox {
+  width: 600px;
+  height: 150px;
+  padding: 13px;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+}
+
+.textareaPlaceholder {
+  margin: 0;
+  font-size: 13px;
+  color: $color-text;
+}
+
+.platformField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.platformRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.platformSelect {
+  width: 200px;
+  height: 38px;
+  padding: 0 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+  background: $color-white;
+  cursor: pointer;
+}
+
+.platformSelectText {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: $color-text;
+}
+
+.platformBadge {
+  padding: 1px 5px 2px;
+  border-radius: 99px;
+  background: $color-border;
+  color: $color-white;
+  font-size: 10px;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+.chevron {
+  width: 13.333px;
+  height: 13.333px;
+  flex-shrink: 0;
+  color: $color-text-muted;
+}
+
+.connectButton {
+  flex-shrink: 0;
+  width: 100px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $color-text-muted;
+  border-radius: $radius-base;
+  background: $color-white;
+  color: $color-text;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.platformHint {
+  margin: 0;
+  font-size: 11px;
+  color: $color-text;
+}
+
+.select {
+  width: 200px;
+}
+
+.estimate {
+  width: 100%;
+  margin: 0;
+  text-align: right;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-black;
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
