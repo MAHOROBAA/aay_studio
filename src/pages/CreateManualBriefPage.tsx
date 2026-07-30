@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Stepper from '../components/common/Stepper/Stepper'
+import InfoCard from '../components/common/InfoCard/InfoCard'
 import styles from './CreateManualBriefPage.module.scss'
 
 const DIRECTION_ITEMS = [
@@ -39,41 +40,6 @@ const GENERATION_ITEMS = [
   { label: '생성 후 잔액', value: '1,476크레딧' },
 ]
 
-type InfoCardProps = {
-  title: string
-  items: { label: string; value: string }[]
-  editable?: boolean
-}
-
-function InfoCard({ title, items, editable = false }: InfoCardProps) {
-  const rowGapClassName = editable ? styles.infoTableCompact : styles.infoTableWide
-
-  return (
-    <div className={styles.infoCard}>
-      <div className={styles.infoBody}>
-        <p className={styles.infoTitle}>{title}</p>
-        <div className={[styles.infoTable, rowGapClassName].join(' ')}>
-          <div className={styles.infoLabels}>
-            {items.map((item) => (
-              <p key={item.label}>{item.label}</p>
-            ))}
-          </div>
-          <div className={styles.infoValues}>
-            {items.map((item) => (
-              <p key={item.label}>{item.value}</p>
-            ))}
-          </div>
-        </div>
-      </div>
-      {editable && (
-        <button type="button" className={styles.editButton}>
-          수정
-        </button>
-      )}
-    </div>
-  )
-}
-
 function CreateManualBriefPage() {
   const navigate = useNavigate()
 
@@ -110,7 +76,11 @@ function CreateManualBriefPage() {
           <Button type="button" variant="secondary" onClick={() => navigate('/create/manual')}>
             ← 이전
           </Button>
-          <Button type="button" variant="primary">
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => navigate('/create/generating', { state: { flow: 'manual' } })}
+          >
             생성 · 24크레딧 →
           </Button>
         </div>

@@ -11,7 +11,7 @@
 | A | 5.1 랜딩, 5.2 홈, 5.3 작업 방식 선택 | `/`, `/home`, `/create` | `1:2`, `53:102`, `53:299` | 완료 |
 | B | 5.4 템플릿 선택 + 캐릭터·세계관·스토리 설정 | `/create/template`, `/create/template/setup` | `53:202`, `53:472` | 완료 |
 | C | 5.5 직접 만들기 플로우(아이디어 입력, AI 기획 확인) | `/create/manual`, `/create/manual/brief` | `5:2`, `14:119` | 완료 |
-| D | 5.6 생성 중, 5.7 검토, 5.8 게시 설정 — 템플릿·직접 만들기 공통 | `/create/settings`, `/create/generating`, `/create/review`, `/create/publish` | `63:699`, `63:905`, `63:1399`, `63:1695` | 대기 |
+| D | 5.6 생성 중, 5.7 검토, 5.8 게시 설정 — 템플릿·직접 만들기 공통 | `/create/settings`, `/create/generating`, `/create/review`, `/create/publish` | `63:699`, `63:905`, `63:1399`, `63:1695` | 완료 |
 | E | 5.9 라이브러리, 5.10 영상 상세 | `/library`, `/library/:videoId` | `72:194`, `97:221` | 대기 |
 | F | 5.11 마이페이지 | `/mypage` | `105:234` | 대기 |
 
@@ -31,6 +31,25 @@
   두 화면은 라우트가 다르므로(스펙 4.2) 배치 D에서 `/create/settings`를 별도 페이지로 구현해야 한다 — `CreateManualBriefPage`의
   `InfoCard` 패턴(연출 방향/장면 구성/오디오 구성/출력 정보/생성 정보 박스)을 참고해서 구조를 재사용할 수 있다.
 
+## 배치 D 확인 결과 (완료)
+
+- `/create/settings`(`63:699`)는 템플릿 플로우 전용이다. 직접 만들기는 이 라우트를 전혀 쓰지 않는다(배치 C 결론 참고).
+  "요약" 박스(템플릿/주인공/주변 인물/세계관/스토리, 인물은 40×40 아바타 자리표시자 포함)만 `/create/manual/brief`의 "원본 요청" 박스와
+  다르고, 나머지(연출 방향/장면 구성/오디오 구성/출력 정보/생성 정보 `InfoCard`, 하단 버튼)는 동일한 구조라 `InfoCard`를
+  `src/components/common/InfoCard/InfoCard.tsx`로 공통화해서 두 화면 모두에서 재사용한다.
+- **가로 스테퍼 표시 여부는 진입 플로우에 따라 다르다(사용자 확인 완료)**: 직접 만들기로 들어왔을 때만
+  `/create/generating`·`/create/review`·`/create/publish`에 상단 5단계 스테퍼(요청-AI기획-생성-검토-게시)가 보이고,
+  템플릿 플로우로 들어왔을 때는 보이지 않는다. `src/router/createFlow.ts`의 `useCreateFlow()` 훅으로 구현했다 —
+  화면 전환 시 `navigate(path, { state: { flow: 'template' | 'manual' } })`로 넘기고, 각 공유 페이지는
+  `useCreateFlow()`로 현재 플로우를 읽어 스테퍼를 조건부 렌더링한다. `state`가 없으면(직접 URL 진입 등) `template`으로 간주한다.
+- **영상 플레이어 가로 폭이 스펙(5.7 "가로 폭 800px")과 다르다.** Figma 실측: 검토 화면 600px, 게시 화면(정보 카드와 나란히 배치) 300px.
+  둘 다 800px가 아니어서, 이번엔 Figma 실측값을 그대로 사용했다(문서 우선순위 규칙상 시각 수치는 Figma 우선).
+  플레이어를 다루는 후속 작업(3~5단계) 전에 이 폭 값이 맞는지 한 번 더 확인이 필요하다.
+- 영상 미리보기(재생바 + 재생/음량 버튼 + 실제 비율을 나타내는 안쪽 사각형)는 검토·게시 화면에 반복돼서
+  `src/components/common/VideoPreview/VideoPreview.tsx`로 공통화했다.
+- `CreateManualBriefPage`의 "생성 · 24크레딧 →" 버튼이 배치 C에서 연결되지 않은 채 남아 있던 것을 이번에
+  `/create/generating`(flow: manual)로 연결해 일관성을 맞췄다.
+
 ## 지금까지 정한 구현 방식(새 세션도 그대로 따를 것)
 
 - **공통 버튼**: Figma에는 `#333`/`#000` 배경 버튼이 섞여 있지만, 스펙 6.1("주요 실행: 검정 배경")과
@@ -49,4 +68,8 @@
 - **작업 완료 후**: `npm run lint`, `npm run build` 확인 후 커밋·푸시한다(사용자 요청 시).
 - **가로형 스테퍼(요청/AI 기획/생성/검토/게시)**: 공통 컴포넌트 `src/components/common/Stepper/Stepper.tsx`로 구현했다
   (`current` prop으로 활성 단계 표시). 템플릿 플로우의 캐릭터/세계관/스토리 세로 스테퍼와는 별개 컴포넌트다.
-  배치 D의 `/create/generating`·`/create/review`·`/create/publish`에서도 같은 5단계 흐름이면 이 컴포넌트를 재사용한다.
+  단, `/create/generating`·`/create/review`·`/create/publish`에서는 직접 만들기로 들어왔을 때만 렌더링한다(위 "배치 D 확인 결과" 참고).
+- **`InfoCard`(라벨:값 목록 + 선택적 "수정" 버튼)**와 **`VideoPreview`(재생바 + 재생/음량 버튼 자리표시자)**는
+  `src/components/common/`에 공통 컴포넌트로 있다. AI 기획 확인·검토·게시 등 정보 카드나 영상 미리보기가 필요한 화면에서 재사용한다.
+- **플로우 구분이 필요한 공유 화면**: `src/router/createFlow.ts`의 `useCreateFlow()` 훅을 사용한다.
+  `navigate(path, { state: { flow: 'template' | 'manual' } })`로 넘기고 받는 쪽에서 `useCreateFlow()`로 읽는다.

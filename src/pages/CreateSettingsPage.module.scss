@@ -1,0 +1,119 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 30px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.content {
+  width: 850px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-black;
+}
+
+.summary {
+  width: 500px;
+  padding: 16px;
+  border: 1px solid #dddddd;
+  border-radius: $radius-base;
+  background: $color-white;
+}
+
+.summaryTitle {
+  margin: 0 0 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.summaryTable {
+  display: flex;
+  align-items: flex-start;
+  font-size: 13px;
+  color: $color-text;
+}
+
+.summaryLabels {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 12px;
+  border-right: 1px solid $color-border;
+
+  p {
+    margin: 0;
+    line-height: 20px;
+  }
+}
+
+.summaryValues {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 12px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.summaryPeople {
+  display: flex;
+  gap: 10px;
+}
+
+.summaryPerson {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.summaryAvatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: #d9d9d9;
+}
+
+.columns {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+}
+
+.mainColumn {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sideColumn {
+  width: 330px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

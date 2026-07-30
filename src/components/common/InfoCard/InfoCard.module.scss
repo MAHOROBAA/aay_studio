@@ -1,0 +1,88 @@
+@use '../../../styles/tokens' as *;
+
+.infoCard {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px;
+  border: 1px solid $color-border;
+  border-radius: $radius-base;
+  background: $color-white;
+}
+
+.infoBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.infoTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.infoTable {
+  display: flex;
+  align-items: flex-start;
+  font-size: 13px;
+  color: $color-text;
+}
+
+.infoTableCompact {
+  .infoLabels,
+  .infoValues {
+    gap: 4px;
+  }
+}
+
+.infoTableWide {
+  .infoLabels,
+  .infoValues {
+    gap: 20px;
+  }
+}
+
+.infoLabels {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding-right: 12px;
+  border-right: 1px solid $color-border;
+
+  p {
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
+.infoValues {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding-left: 12px;
+
+  p {
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
+.editButton {
+  flex-shrink: 0;
+  width: 60px;
+  padding: 10px;
+  border: 1px solid $color-text-muted;
+  border-radius: 6.667px;
+  background: $color-white;
+  color: $color-text-muted;
+  font-size: 13.333px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+}
