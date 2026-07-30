@@ -1,0 +1,250 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.pageDescription {
+  margin: -12px 0 0;
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.summary {
+  padding: 20px 24px;
+  border-radius: $radius-base;
+  background: #f8f8f8;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.summaryBalance {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.balanceLabel {
+  margin: 0;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.balanceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.balanceNumber {
+  font-size: 28px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.balanceUnit {
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.balanceBreakdown {
+  flex: 1;
+  margin: 0;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+}
+
+.tab {
+  height: 33px;
+  padding: 0 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: $color-white;
+  color: $color-text-muted;
+  font-family: $font-family-base;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tabActive {
+  border: none;
+  background: $color-black;
+  color: $color-white;
+}
+
+.purchaseArea {
+  display: flex;
+  gap: 20px;
+}
+
+.productList {
+  flex-shrink: 0;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product {
+  height: 72px;
+  padding: 12px 18px;
+  border: 1px solid #ddd;
+  border-radius: $radius-base;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+}
+
+.productSelected {
+  border: 2px solid #333333;
+}
+
+.productAmount {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.productLabel {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.productSubLabel {
+  margin: 0;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.productPriceInfo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bonusBadge {
+  padding: 4px 8px;
+  border: 1px solid #333333;
+  border-radius: $radius-base;
+  font-size: 11px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.priceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.originalPrice {
+  font-size: 11px;
+  color: $color-text-muted;
+  text-decoration: line-through;
+}
+
+.price {
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.selectedArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.selectedSummary {
+  padding: 18px 20px;
+  border: 1px solid #ddd;
+  border-radius: $radius-base;
+  background: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.selectedLabel {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.selectedSubLabel {
+  margin: 0;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.selectedPayment {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.payButtonWrap {
+  display: flex;
+
+  button {
+    flex: 1;
+  }
+}
+
+.notice {
+  padding: 16px 18px;
+  border: 1px solid #ddd;
+  border-radius: $radius-base;
+  background: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.noticeTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.noticeList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 11px;
+  color: $color-text-muted;
+}

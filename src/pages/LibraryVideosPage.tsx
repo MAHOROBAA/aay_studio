@@ -6,6 +6,7 @@ import StatusBadge, { type VideoStatus } from '../components/common/StatusBadge/
 import MoreIcon from '../components/common/MoreIcon/MoreIcon'
 import GridViewIcon from '../components/common/GridViewIcon/GridViewIcon'
 import ListViewIcon from '../components/common/ListViewIcon/ListViewIcon'
+import ChevronDownIcon from '../components/common/ChevronDownIcon/ChevronDownIcon'
 import styles from './LibraryVideosPage.module.scss'
 
 type VideoCardData = {
@@ -92,20 +93,6 @@ const VIDEOS: VideoCardData[] = [
   },
 ]
 
-function ChevronIcon() {
-  return (
-    <svg className={styles.filterChevron} viewBox="0 0 13.3333 13.3333" fill="none" aria-hidden="true">
-      <path
-        d="M9.8313 5.08433L6.66666 8.24904L3.50195 5.08433"
-        stroke="currentColor"
-        strokeWidth="0.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 function LibraryVideosPage() {
   const navigate = useNavigate()
   const [view, setView] = useState<'grid' | 'list'>('grid')
@@ -127,15 +114,15 @@ function LibraryVideosPage() {
         </div>
         <button type="button" className={styles.filter}>
           상태 · 전체
-          <ChevronIcon />
+          <ChevronDownIcon className={styles.filterChevron} />
         </button>
         <button type="button" className={styles.filter}>
           제작 방식 · 전체
-          <ChevronIcon />
+          <ChevronDownIcon className={styles.filterChevron} />
         </button>
         <button type="button" className={[styles.filter, styles.sort].join(' ')}>
           최근 생성순
-          <ChevronIcon />
+          <ChevronDownIcon className={styles.filterChevron} />
         </button>
         <div className={styles.viewToggle}>
           <button

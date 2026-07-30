@@ -32,7 +32,9 @@ Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`) �
 | 라이브러리 - 세계관 상세 | `151:750` | addendum → `/library/worlds/:worldId`. 배치 F 완료 |
 | 라이브러리 - 스토리 | `151:858` | addendum → `/library/stories`. 배치 F 완료 |
 | 라이브러리 - 스토리 상세 | `151:990` | addendum → `/library/stories/:storyId`. 배치 F 완료 |
-| 마이페이지 | `105:234` | 5.11 마이페이지 |
+| 마이페이지 | `105:234` | 5.11 마이페이지 → `/mypage`. spec-addendum-credit.md 14장 크레딧 요약 UI 포함, 배치 G 완료 |
+| 마이페이지 - 크레딧 내역 | `176:1145` | spec-addendum-credit.md 14장 이용 내역 → `/mypage/credits`. 배치 G 완료 |
+| 마이페이지 - 크레딧 충전 | `176:1231` | spec-addendum-credit.md 8~10장 충전 상품 UI → `/mypage/credits/charge`. 배치 G 완료 |
 | 완료 팝업(공통) | `63:1833` | 6.4 게시 완료 팝업 |
 | 컨펌 팝업(공통) | `105:413` | 6.3 일반 컨펌 |
 | 컨펌 팝업(위험 실행) | `105:444` | 6.3 위험 컨펌 |
@@ -50,4 +52,7 @@ Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`) �
 - "라이브러리 - 영상(목록 보기)"(`183:1348`), "라이브러리 - 캐릭터(목록 보기)"(`183:1551`)는 배치 F 이후 사용자가 Figma에
   추가한 목록(테이블형) 화면이다. 두 페이지 모두 카드/목록 보기 토글이 실제로 동작하도록 구현했고, 세계관·스토리는
   스펙상 보기 전환 기능이 없어 대상이 아니다.
+- 마이페이지 3화면(`105:234`/`176:1145`/`176:1231`) 모두 Button 컴포넌트 인스턴스가 포함된 컨테이너 노드에서
+  `get_design_context`가 반복적으로 5분 타임아웃/연결 끊김이 났다. 인스턴스가 없는 leaf 텍스트 노드·서브프레임 단위로
+  쪼개서 조회하면 빠르게 응답한다(이 세 화면에서도 동일하게 적용됨 — 배치 E 확인 결과의 팁 참고).
 - 이 표는 Figma 파일이 수정되면 최신 상태가 아닐 수 있다. node id 조회가 실패하면 이 표를 맹신하지 말고 `get_metadata`로 재확인한다.

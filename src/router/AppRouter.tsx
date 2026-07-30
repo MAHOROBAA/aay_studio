@@ -20,6 +20,8 @@ import LibraryWorldDetailPage from '../pages/LibraryWorldDetailPage'
 import LibraryStoriesPage from '../pages/LibraryStoriesPage'
 import LibraryStoryDetailPage from '../pages/LibraryStoryDetailPage'
 import MyPage from '../pages/MyPage'
+import MyPageCreditHistoryPage from '../pages/MyPageCreditHistoryPage'
+import MyPageCreditChargePage from '../pages/MyPageCreditChargePage'
 
 function AppRouter() {
   return (
@@ -47,6 +49,8 @@ function AppRouter() {
           <Route path="/library/stories" element={<LibraryStoriesPage />} />
           <Route path="/library/stories/:storyId" element={<LibraryStoryDetailPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/mypage/credits" element={<MyPageCreditHistoryPage />} />
+          <Route path="/mypage/credits/charge" element={<MyPageCreditChargePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

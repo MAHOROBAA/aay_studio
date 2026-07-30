@@ -1,0 +1,204 @@
+@use '../styles/tokens' as *;
+
+.page {
+  min-height: 100%;
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.pageDescription {
+  margin: -12px 0 0;
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.summary {
+  padding: 20px 24px;
+  border-radius: $radius-base;
+  background: #f8f8f8;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.summaryBalance {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.balanceLabel {
+  margin: 0;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.balanceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.balanceNumber {
+  font-size: 28px;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.balanceUnit {
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.balanceBreakdown {
+  flex: 1;
+  margin: 0;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+}
+
+.tab {
+  height: 33px;
+  padding: 0 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: $color-white;
+  color: $color-text-muted;
+  font-family: $font-family-base;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tabActive {
+  border: none;
+  background: $color-black;
+  color: $color-white;
+}
+
+.periodFilter {
+  width: 168px;
+  height: 38px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: $color-white;
+  cursor: pointer;
+}
+
+.periodLabel {
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.periodValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-text-muted;
+}
+
+.periodChevron {
+  flex-shrink: 0;
+  width: 13.333px;
+  height: 13.333px;
+  margin-left: auto;
+  color: $color-text-muted;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+.tableHeader {
+  height: 48px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  background: #f8f8f8;
+}
+
+.tableHeader span {
+  font-size: 12px;
+  font-weight: 500;
+  color: $color-text-muted;
+}
+
+.tableRow {
+  height: 62px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.colDate {
+  flex-shrink: 0;
+  width: 134px;
+}
+
+.colType {
+  flex-shrink: 0;
+  width: 186px;
+}
+
+.colAmount {
+  flex-shrink: 0;
+  width: 180px;
+}
+
+.colPayment {
+  flex-shrink: 0;
+  width: 150px;
+}
+
+.colStatus {
+  flex-shrink: 0;
+  width: 176px;
+}
+
+.colBalance {
+  flex: 1;
+}
+
+.amountValue {
+  color: $color-text;
+}
+
+.balanceValue {
+  font-weight: 500;
+  color: $color-text-muted;
+}
+
+.expiryNote {
+  margin: 20px 0 0;
+  padding: 0 20px;
+  font-size: 11px;
+  color: $color-text-muted;
+}

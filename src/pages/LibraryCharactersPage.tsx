@@ -5,6 +5,7 @@ import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
 import MoreIcon from '../components/common/MoreIcon/MoreIcon'
 import GridViewIcon from '../components/common/GridViewIcon/GridViewIcon'
 import ListViewIcon from '../components/common/ListViewIcon/ListViewIcon'
+import ChevronDownIcon from '../components/common/ChevronDownIcon/ChevronDownIcon'
 import styles from './LibraryCharactersPage.module.scss'
 
 type CharacterCardData = {
@@ -60,20 +61,6 @@ const CHARACTERS: CharacterCardData[] = [
   },
 ]
 
-function ChevronIcon() {
-  return (
-    <svg className={styles.filterChevron} viewBox="0 0 13.3333 13.3333" fill="none" aria-hidden="true">
-      <path
-        d="M9.8313 5.08433L6.66666 8.24904L3.50195 5.08433"
-        stroke="currentColor"
-        strokeWidth="0.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 function LibraryCharactersPage() {
   const navigate = useNavigate()
   const [view, setView] = useState<'grid' | 'list'>('grid')
@@ -95,7 +82,7 @@ function LibraryCharactersPage() {
         </div>
         <button type="button" className={styles.sort}>
           최근 수정순
-          <ChevronIcon />
+          <ChevronDownIcon className={styles.filterChevron} />
         </button>
         <div className={styles.viewToggle}>
           <button
