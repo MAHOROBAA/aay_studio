@@ -4,6 +4,9 @@
 화면 기획과 상세 정책은 [`docs/spec/aay-studio-spec.md`](docs/spec/aay-studio-spec.md)를 참고하고,
 시각적 기준은 Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`)를 참고한다.
 
+**"2단계 배치 진행해줘" 같은 요청을 받으면 먼저 [`docs/spec/phase2-batches.md`](docs/spec/phase2-batches.md)를 읽고
+어떤 배치가 완료됐고 다음에 뭘 해야 하는지 확인한다.** 이 문서에 없는 새로운 진행 방식을 임의로 정하지 않는다.
+
 ## 0. 문서 우선순위
 
 - 화면 레이아웃, 색상, 폰트, 여백 등 시각적 수치는 **Figma를 우선**한다.
