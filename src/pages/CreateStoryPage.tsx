@@ -3,7 +3,7 @@ import Button from '../components/common/Button/Button'
 import youtubeIcon from '../assets/platforms/youtube.png'
 import tiktokIcon from '../assets/platforms/tiktok.png'
 import instagramIcon from '../assets/platforms/instagram.png'
-import styles from './CreateTemplatePage.module.scss'
+import styles from './CreateStoryPage.module.scss'
 
 const SUPPORTED_PLATFORMS = [
   { name: 'YouTube', icon: youtubeIcon },
@@ -11,11 +11,11 @@ const SUPPORTED_PLATFORMS = [
   { name: 'Instagram', icon: instagramIcon },
 ]
 
-function CreateTemplatePage() {
+function CreateStoryPage() {
   const navigate = useNavigate()
 
   return (
-    <div className={styles.createTemplate}>
+    <div className={styles.createStory}>
       <h1 className={styles.heading}>어떤 콘텐츠를 만들까요?</h1>
       <div className={styles.cards}>
         <div className={styles.card}>
@@ -34,7 +34,7 @@ function CreateTemplatePage() {
               ))}
             </div>
           </div>
-          <Button type="button" variant="primary" onClick={() => navigate('/create/template/setup')}>
+          <Button type="button" variant="primary" onClick={() => navigate('/create/story/setup')}>
             이 템플릿 사용하기 →
           </Button>
         </div>
@@ -49,4 +49,4 @@ function CreateTemplatePage() {
   )
 }
 
-export default CreateTemplatePage
+export default CreateStoryPage

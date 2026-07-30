@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Dropdown from '../components/common/Dropdown/Dropdown'
-import styles from './CreateTemplateSetupPage.module.scss'
+import styles from './CreateStorySetupPage.module.scss'
 
 const STEPS = [
   { id: 'section-character', label: '캐릭터' },
@@ -9,7 +9,7 @@ const STEPS = [
   { id: 'section-story', label: '스토리' },
 ]
 
-function CreateTemplateSetupPage() {
+function CreateStorySetupPage() {
   const navigate = useNavigate()
 
   return (
@@ -117,4 +117,4 @@ function CreateTemplateSetupPage() {
   )
 }
 
-export default CreateTemplateSetupPage
+export default CreateStorySetupPage

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Stepper from '../components/common/Stepper/Stepper'
 import InfoCard from '../components/common/InfoCard/InfoCard'
-import styles from './CreateManualBriefPage.module.scss'
+import styles from './CreateFreeBriefPage.module.scss'
 
 const DIRECTION_ITEMS = [
   { label: '분위기', value: '차분하고 아늑하게' },
@@ -40,7 +40,7 @@ const GENERATION_ITEMS = [
   { label: '생성 후 잔액', value: '1,476크레딧' },
 ]
 
-function CreateManualBriefPage() {
+function CreateFreeBriefPage() {
   const navigate = useNavigate()
 
   return (
@@ -73,13 +73,13 @@ function CreateManualBriefPage() {
         </div>
 
         <div className={styles.actions}>
-          <Button type="button" variant="secondary" onClick={() => navigate('/create/manual')}>
+          <Button type="button" variant="secondary" onClick={() => navigate('/create/free')}>
             ← 이전
           </Button>
           <Button
             type="button"
             variant="primary"
-            onClick={() => navigate('/create/generating', { state: { flow: 'manual' } })}
+            onClick={() => navigate('/create/generating', { state: { flow: 'free' } })}
           >
             생성 · 24크레딧 →
           </Button>
@@ -89,4 +89,4 @@ function CreateManualBriefPage() {
   )
 }
 
-export default CreateManualBriefPage
+export default CreateFreeBriefPage

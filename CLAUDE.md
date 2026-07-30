@@ -5,8 +5,11 @@
 시각적 기준은 Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`)를 참고한다.
 
 **[`docs/spec/spec-addendum.md`](docs/spec/spec-addendum.md)는 `aay-studio-spec.md` 작성 이후 추가·변경된 내용이며,
-충돌 시 이 문서가 우선한다.** 라이브러리(캐릭터·세계관·스토리), 프로젝트/채널 용어, 템플릿 Step 2의 캐릭터 생성 등을
-작업할 때는 반드시 먼저 확인한다.
+충돌 시 이 문서가 우선한다. 이 문서는 통째로 최신본으로 교체될 수 있으므로 항상 최신 버전 기준으로 작업한다.**
+2~3장의 **제작 방식 명칭 변경(템플릿 적용/직접 만들기 → 스토리 영상/자유 영상)**은 배치 H에서 코드 전반
+(라우트 `/create/story`, `/create/story/setup`, `/create/free`, `/create/free/brief`, `CreateFlow` 타입
+`'story' | 'free'`, 화면 문구)에 이미 반영했다 — `template`/`manual`이라는 이름을 새로 만들지 않는다. 라이브러리
+(캐릭터·세계관·스토리), 삭제·크레딧 부족 팝업 등 아직 구현하지 않은 항목을 작업할 때는 반드시 이 문서를 먼저 확인한다.
 
 **[`docs/spec/spec-addendum-credit.md`](docs/spec/spec-addendum-credit.md)는 크레딧·결제·GA4 분석 정책 추가 명세다.**
 마이페이지 크레딧 UI, 크레딧 충전/결제 화면, GA4 이벤트 연동을 작업할 때 먼저 확인한다. 이 문서 24장에 명시된

@@ -11,14 +11,14 @@ function CreateMethodPage() {
       <div className={styles.options}>
         <div className={styles.option}>
           <p className={styles.optionDescription}>{'영상 유형에 맞춰 준비된 제작 흐름으로\n빠르게 시작해보세요.'}</p>
-          <Button type="button" variant="primary" onClick={() => navigate('/create/template')}>
-            템플릿으로 만들기 →
+          <Button type="button" variant="primary" onClick={() => navigate('/create/story')}>
+            스토리 영상 만들기 →
           </Button>
         </div>
         <div className={styles.option}>
           <p className={styles.optionDescription}>{'프롬프트부터 영상 설정까지\n원하는 대로 직접 구성해보세요.'}</p>
-          <Button type="button" variant="primary" onClick={() => navigate('/create/manual')}>
-            직접 만들기 →
+          <Button type="button" variant="primary" onClick={() => navigate('/create/free')}>
+            자유 영상 만들기 →
           </Button>
         </div>
       </div>

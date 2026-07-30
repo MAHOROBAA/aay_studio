@@ -18,7 +18,7 @@ function CreateGeneratingPage() {
     <div className={styles.page}>
       <h1 className={styles.heading}>Aaaay! 영상을 만들고 있어요.</h1>
 
-      {flow === 'manual' && <Stepper current={3} />}
+      {flow === 'free' && <Stepper current={3} />}
 
       <div className={styles.progress}>
         <p className={styles.progressLabel}>전체 진행률</p>

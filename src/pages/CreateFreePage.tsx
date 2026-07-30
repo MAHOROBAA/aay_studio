@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Dropdown from '../components/common/Dropdown/Dropdown'
 import Stepper from '../components/common/Stepper/Stepper'
-import styles from './CreateManualPage.module.scss'
+import styles from './CreateFreePage.module.scss'
 
-function CreateManualPage() {
+function CreateFreePage() {
   const navigate = useNavigate()
 
   return (
@@ -72,7 +72,7 @@ function CreateManualPage() {
         <p className={styles.estimate}>예상: 24크레딧 · 약 2~4분</p>
 
         <div className={styles.actions}>
-          <Button type="button" variant="primary" onClick={() => navigate('/create/manual/brief')}>
+          <Button type="button" variant="primary" onClick={() => navigate('/create/free/brief')}>
             다음 →
           </Button>
         </div>
@@ -81,4 +81,4 @@ function CreateManualPage() {
   )
 }
 
-export default CreateManualPage
+export default CreateFreePage

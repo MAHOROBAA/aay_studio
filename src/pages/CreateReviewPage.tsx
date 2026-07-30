@@ -18,13 +18,13 @@ const VIDEO_INFO_ITEMS = [
 function CreateReviewPage() {
   const navigate = useNavigate()
   const flow = useCreateFlow()
-  const briefPath = flow === 'manual' ? '/create/manual/brief' : '/create/settings'
+  const briefPath = flow === 'free' ? '/create/free/brief' : '/create/settings'
 
   return (
     <div className={styles.page}>
       <h1 className={styles.heading}>Aaaay! 영상이 완성됐어요.</h1>
 
-      {flow === 'manual' && <Stepper current={4} />}
+      {flow === 'free' && <Stepper current={4} />}
 
       <div className={styles.body}>
         <VideoPreview width={600} height={337.5} contentWidth={206} progressPercent={19} />

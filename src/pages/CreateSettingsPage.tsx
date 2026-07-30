@@ -93,13 +93,13 @@ function CreateSettingsPage() {
         </div>
 
         <div className={styles.actions}>
-          <Button type="button" variant="secondary" onClick={() => navigate('/create/template/setup')}>
+          <Button type="button" variant="secondary" onClick={() => navigate('/create/story/setup')}>
             ← 설정 수정
           </Button>
           <Button
             type="button"
             variant="primary"
-            onClick={() => navigate('/create/generating', { state: { flow: 'template' } })}
+            onClick={() => navigate('/create/generating', { state: { flow: 'story' } })}
           >
             생성 · 24크레딧 →
           </Button>

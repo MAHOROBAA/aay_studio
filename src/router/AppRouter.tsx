@@ -3,10 +3,10 @@ import AppLayout from '../components/layout/AppLayout/AppLayout'
 import LandingPage from '../pages/LandingPage'
 import HomePage from '../pages/HomePage'
 import CreateMethodPage from '../pages/CreateMethodPage'
-import CreateTemplatePage from '../pages/CreateTemplatePage'
-import CreateTemplateSetupPage from '../pages/CreateTemplateSetupPage'
-import CreateManualPage from '../pages/CreateManualPage'
-import CreateManualBriefPage from '../pages/CreateManualBriefPage'
+import CreateStoryPage from '../pages/CreateStoryPage'
+import CreateStorySetupPage from '../pages/CreateStorySetupPage'
+import CreateFreePage from '../pages/CreateFreePage'
+import CreateFreeBriefPage from '../pages/CreateFreeBriefPage'
 import CreateSettingsPage from '../pages/CreateSettingsPage'
 import CreateGeneratingPage from '../pages/CreateGeneratingPage'
 import CreateReviewPage from '../pages/CreateReviewPage'
@@ -31,10 +31,10 @@ function AppRouter() {
         <Route element={<AppLayout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/create" element={<CreateMethodPage />} />
-          <Route path="/create/template" element={<CreateTemplatePage />} />
-          <Route path="/create/template/setup" element={<CreateTemplateSetupPage />} />
-          <Route path="/create/manual" element={<CreateManualPage />} />
-          <Route path="/create/manual/brief" element={<CreateManualBriefPage />} />
+          <Route path="/create/story" element={<CreateStoryPage />} />
+          <Route path="/create/story/setup" element={<CreateStorySetupPage />} />
+          <Route path="/create/free" element={<CreateFreePage />} />
+          <Route path="/create/free/brief" element={<CreateFreeBriefPage />} />
           <Route path="/create/settings" element={<CreateSettingsPage />} />
           <Route path="/create/generating" element={<CreateGeneratingPage />} />
           <Route path="/create/review" element={<CreateReviewPage />} />

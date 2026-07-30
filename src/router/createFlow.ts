@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 
-export type CreateFlow = 'template' | 'manual'
+export type CreateFlow = 'story' | 'free'
 
 type CreateFlowLocationState = {
   flow?: CreateFlow
@@ -9,5 +9,5 @@ type CreateFlowLocationState = {
 export function useCreateFlow(): CreateFlow {
   const location = useLocation()
   const state = location.state as CreateFlowLocationState | null
-  return state?.flow === 'manual' ? 'manual' : 'template'
+  return state?.flow === 'free' ? 'free' : 'story'
 }

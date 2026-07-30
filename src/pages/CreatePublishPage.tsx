@@ -28,7 +28,7 @@ function CreatePublishPage() {
     <div className={styles.page}>
       <h1 className={styles.heading}>게시 설정</h1>
 
-      {flow === 'manual' && <Stepper current={5} />}
+      {flow === 'free' && <Stepper current={5} />}
 
       <div className={styles.body}>
         <div className={styles.topRow}>

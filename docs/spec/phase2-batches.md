@@ -12,12 +12,13 @@
 | 배치 | 범위(스펙) | 라우트 | Figma node id | 상태 |
 |---|---|---|---|---|
 | A | 5.1 랜딩, 5.2 홈, 5.3 작업 방식 선택 | `/`, `/home`, `/create` | `1:2`, `53:102`, `53:299` | 완료 |
-| B | 5.4 템플릿 선택 + 캐릭터·세계관·스토리 설정 | `/create/template`, `/create/template/setup` | `53:202`, `53:472` | 완료 |
-| C | 5.5 직접 만들기 플로우(아이디어 입력, AI 기획 확인) | `/create/manual`, `/create/manual/brief` | `5:2`, `14:119` | 완료 |
-| D | 5.6 생성 중, 5.7 검토, 5.8 게시 설정 — 템플릿·직접 만들기 공통 | `/create/settings`, `/create/generating`, `/create/review`, `/create/publish` | `63:699`, `63:905`, `63:1399`, `63:1695` | 완료 |
+| B | 5.4 템플릿 선택(스토리 영상) + 캐릭터·세계관·스토리 설정 | `/create/story`, `/create/story/setup` | `53:202`, `53:472` | 완료 |
+| C | 5.5 직접 만들기(자유 영상) 플로우(아이디어 입력, AI 기획 확인) | `/create/free`, `/create/free/brief` | `5:2`, `14:119` | 완료 |
+| D | 5.6 생성 중, 5.7 검토, 5.8 게시 설정 — 스토리 영상·자유 영상 공통 | `/create/settings`, `/create/generating`, `/create/review`, `/create/publish` | `63:699`, `63:905`, `63:1399`, `63:1695` | 완료 |
 | E | 5.9 라이브러리 - 영상, 5.10 영상 상세 | `/library/videos`, `/library/videos/:videoId` | `72:194`, `97:221` | 완료(배치 F에서 라우트 개정) |
 | F | addendum — 라이브러리 캐릭터/세계관/스토리(목록+상세), 공통 상세 헤더 도입 | `/library/characters(+:id)`, `/library/worlds(+:id)`, `/library/stories(+:id)` | 아래 "배치 F 확인 결과" 참고 | 완료 |
 | G | 5.11 마이페이지 + spec-addendum-credit.md 14장(크레딧 요약/이용내역)·8~10장(충전 상품 UI) | `/mypage`, `/mypage/credits`, `/mypage/credits/charge` | `105:234`, `176:1145`, `176:1231` | 완료 |
+| H | spec-addendum.md 2~3장 — 제작 방식 명칭 리네이밍(템플릿 적용/직접 만들기 → 스토리 영상/자유 영상) | `/create/story(+/setup)`, `/create/free(+/brief)` | 위 B/C와 동일 | 완료 |
 
 세부 node id 매핑은 `docs/spec/figma-frame-map.md`를 함께 참고한다.
 
@@ -146,6 +147,34 @@
 - **회색 배경 값 재사용**: 크레딧 요약 카드, 크레딧 충전의 "선택 상품 요약"/결제 안내 박스는 모두 기존에 이미 여러 번
   쓰인 `#f8f8f8`을 그대로 재사용했다(별도 토큰화는 하지 않음 — 배치 E/F와 동일한 방침).
 
+## 배치 H 확인 결과 (완료) — 제작 방식 명칭 리네이밍
+
+- `spec-addendum.md`가 최신본으로 교체되면서 2~3장에 `템플릿 적용 → 스토리 영상`, `직접 만들기 → 자유 영상` 명칭 변경이
+  추가됐다. 사용자가 이 리네이밍을 별도 배치로 즉시 진행해달라고 명시적으로 요청해서 진행했다.
+- **파일명 변경**(`git mv`): `CreateTemplatePage`→`CreateStoryPage`, `CreateTemplateSetupPage`→`CreateStorySetupPage`,
+  `CreateManualPage`→`CreateFreePage`, `CreateManualBriefPage`→`CreateFreeBriefPage` (각각 `.tsx`+`.module.scss`).
+- **라우트 변경**: `/create/template`→`/create/story`, `/create/template/setup`→`/create/story/setup`,
+  `/create/manual`→`/create/free`, `/create/manual/brief`→`/create/free/brief`. 공유 라우트
+  (`/create/settings`, `/create/generating`, `/create/review`, `/create/publish`)는 이름을 바꾸지 않았다 — 두 플로우가
+  공유하는 화면이라 특정 플로우 이름을 붙일 이유가 없다.
+- **`src/router/createFlow.ts`**: `CreateFlow` 타입을 `'template' | 'manual'` → `'story' | 'free'`로,
+  `useCreateFlow()`의 기본값 분기도 함께 변경했다. `flow === 'manual'` 조건을 쓰던 `CreateGeneratingPage`,
+  `CreateReviewPage`, `CreatePublishPage`의 스테퍼 노출 조건도 `flow === 'free'`로 갱신했다.
+- **화면 문구 변경**: `CreateMethodPage`(작업 방식 선택) 버튼 "템플릿으로 만들기 →"/"직접 만들기 →" →
+  "스토리 영상 만들기 →"/"자유 영상 만들기 →". `HomePage`(`/home`) 카드 제목 "템플릿 적용"/"직접 만들기" →
+  "스토리 영상"/"자유 영상"(내부 변수명 `TEMPLATE_DESCRIPTION`/`MANUAL_DESCRIPTION`, 클래스명 `cardManual`도
+  `STORY_DESCRIPTION`/`FREE_DESCRIPTION`, `cardFree`로 함께 정리). `LibraryVideosPage`의 영상 카드 "제작 방식" 표기
+  ("직접 만들기"/"템플릿")도 "자유 영상"/"스토리 영상"으로 맞췄다.
+- **바꾸지 않은 것**: `CreateStoryPage`(`/create/story`)의 "이 템플릿 사용하기 →" 버튼과 `CreateSettingsPage`
+  "요약" 표의 "템플릿" 라벨은 그대로 뒀다 — 이건 플로우 이름이 아니라 addendum 3.1이 정의한 "프리셋으로서의 템플릿"을
+  가리키는 필드라 리네이밍 대상이 아니다.
+- **Figma 화면 문구는 아직 안 바뀌었다**: `53:299`(작업 방식 선택), `53:202`(콘텐츠 선택) 등 실제 Figma 캡처에는 여전히
+  옛 문구가 남아 있다(스크린샷으로 확인함). spec-addendum이 이미 새 명칭을 확정 지시했고 사용자가 리네이밍을 직접
+  요청했기 때문에 Figma 갱신을 기다리지 않고 코드를 먼저 새 명칭으로 맞췄다 — 일반적인 "화면 수치는 Figma 우선" 규칙의
+  예외 사례로 기록해둔다. 나중에 Figma 문구가 바뀌면 그 값과 다시 대조한다.
+- lint/build 통과, 브라우저에서 스토리 영상·자유 영상 두 플로우 전체(방식 선택 → 생성 중까지) 라우팅과 스테퍼 노출 조건을
+  직접 클릭하며 확인했고 콘솔 에러 없음.
+
 ## 지금까지 정한 구현 방식(새 세션도 그대로 따를 것)
 
 - **공통 버튼**: Figma에는 `#333`/`#000` 배경 버튼이 섞여 있지만, 스펙 6.1("주요 실행: 검정 배경")과
@@ -163,12 +192,14 @@
   원본 크기 그대로 받으면 불필요하게 큰 파일이 될 수 있다(Instagram 아이콘이 960×960 → 32×32로 교체된 사례 있음).
 - **작업 완료 후**: `npm run lint`, `npm run build` 확인 후 커밋·푸시한다(사용자 요청 시).
 - **가로형 스테퍼(요청/AI 기획/생성/검토/게시)**: 공통 컴포넌트 `src/components/common/Stepper/Stepper.tsx`로 구현했다
-  (`current` prop으로 활성 단계 표시). 템플릿 플로우의 캐릭터/세계관/스토리 세로 스테퍼와는 별개 컴포넌트다.
-  단, `/create/generating`·`/create/review`·`/create/publish`에서는 직접 만들기로 들어왔을 때만 렌더링한다(위 "배치 D 확인 결과" 참고).
+  (`current` prop으로 활성 단계 표시). 스토리 영상 플로우의 캐릭터/세계관/스토리 세로 스테퍼와는 별개 컴포넌트다.
+  단, `/create/generating`·`/create/review`·`/create/publish`에서는 자유 영상으로 들어왔을 때만 렌더링한다(위 "배치 D 확인 결과" 참고,
+  배치 H에서 `flow === 'manual'` 조건을 `flow === 'free'`로 갱신했다).
 - **`InfoCard`(라벨:값 목록 + 선택적 "수정" 버튼)**와 **`VideoPreview`(재생바 + 재생/음량 버튼 자리표시자)**는
   `src/components/common/`에 공통 컴포넌트로 있다. AI 기획 확인·검토·게시 등 정보 카드나 영상 미리보기가 필요한 화면에서 재사용한다.
 - **플로우 구분이 필요한 공유 화면**: `src/router/createFlow.ts`의 `useCreateFlow()` 훅을 사용한다.
-  `navigate(path, { state: { flow: 'template' | 'manual' } })`로 넘기고 받는 쪽에서 `useCreateFlow()`로 읽는다.
+  `navigate(path, { state: { flow: 'story' | 'free' } })`로 넘기고 받는 쪽에서 `useCreateFlow()`로 읽는다
+  (배치 H 이전에는 `'template' | 'manual'`이었다 — 새로 코드를 작성할 때 옛 값을 쓰지 않도록 주의).
 - **`StatusBadge`(영상 상태 배지)**는 `src/components/common/StatusBadge/StatusBadge.tsx`에 있다.
   라이브러리 카드와 영상 상세 화면에서 재사용한다.
 - **라이브러리 공통 컴포넌트**: `LibraryTabs`(4탭), `LibraryDetailHeader`(뒤로가기/제목/수정·삭제), `DetailField`(라벨+박스 필드),
