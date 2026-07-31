@@ -39,6 +39,8 @@ function CreateStorySetupPage() {
   const [createTarget, setCreateTarget] = useState<CharacterCreateTarget | null>(null)
   const [isCreatedAlertOpen, setCreatedAlertOpen] = useState(false)
 
+  const [activeStepId, setActiveStepId] = useState(STEPS[0].id)
+
   const [worldMode, setWorldMode] = useState<WorldMode>('new')
   const [selectedWorldId, setSelectedWorldId] = useState('')
   const [worldDraft, setWorldDraft] = useState('')
@@ -85,6 +87,11 @@ function CreateStorySetupPage() {
   }
 
   const isContinueDisabled = worldMode === 'new'
+
+  function handleStepClick(stepId: string) {
+    setActiveStepId(stepId)
+    document.getElementById(stepId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <div className={styles.page}>
@@ -246,10 +253,12 @@ function CreateStorySetupPage() {
       <aside className={styles.stepper}>
         {STEPS.map((step, index) => (
           <div key={step.id} className={styles.stepItem}>
-            <span className={[styles.stepBadge, index === 0 ? styles.stepBadgeActive : ''].join(' ')}>
-              {index + 1}
-            </span>
-            <p className={styles.stepLabel}>{step.label}</p>
+            <button type="button" className={styles.stepButton} onClick={() => handleStepClick(step.id)}>
+              <span className={[styles.stepBadge, step.id === activeStepId ? styles.stepBadgeActive : ''].join(' ')}>
+                {index + 1}
+              </span>
+              <p className={styles.stepLabel}>{step.label}</p>
+            </button>
             {index < STEPS.length - 1 && <div className={styles.stepConnector} />}
           </div>
         ))}
