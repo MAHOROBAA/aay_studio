@@ -3,10 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
 import StatusBadge, { type VideoStatus } from '../components/common/StatusBadge/StatusBadge'
-import MoreIcon from '../components/common/MoreIcon/MoreIcon'
 import GridViewIcon from '../components/common/GridViewIcon/GridViewIcon'
 import ListViewIcon from '../components/common/ListViewIcon/ListViewIcon'
 import ChevronDownIcon from '../components/common/ChevronDownIcon/ChevronDownIcon'
+import CardMenu, { type CardMenuItem } from '../components/common/CardMenu/CardMenu'
+import DownloadIcon from '../components/common/DownloadIcon/DownloadIcon'
+import ClockIcon from '../components/common/ClockIcon/ClockIcon'
+import PublishSettingsIcon from '../components/common/PublishSettingsIcon/PublishSettingsIcon'
+import TrashIcon from '../components/common/TrashIcon/TrashIcon'
+import { RiskConfirmPopup } from '../components/common/Popup'
 import styles from './LibraryVideosPage.module.scss'
 
 type VideoCardData = {
@@ -22,7 +27,7 @@ type VideoCardData = {
   progressPercent?: number
 }
 
-const VIDEOS: VideoCardData[] = [
+const INITIAL_VIDEOS: VideoCardData[] = [
   {
     id: 'v1',
     status: '게시 완료',
@@ -96,10 +101,39 @@ const VIDEOS: VideoCardData[] = [
 function LibraryVideosPage() {
   const navigate = useNavigate()
   const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [videos, setVideos] = useState(INITIAL_VIDEOS)
+  const [deleteTarget, setDeleteTarget] = useState<VideoCardData | null>(null)
+
+  const getMenuItems = (video: VideoCardData): CardMenuItem[] => {
+    const items: CardMenuItem[] = [{ key: 'download', label: '다운로드', icon: <DownloadIcon />, onSelect: () => {} }]
+
+    if (video.status === '예약 게시') {
+      items.push({ key: 'reschedule', label: '예약 변경', icon: <ClockIcon />, onSelect: () => {} })
+    } else {
+      items.push({ key: 'publish-settings', label: '게시 설정 변경', icon: <PublishSettingsIcon />, onSelect: () => {} })
+    }
+
+    items.push({ key: 'delete', label: '삭제', icon: <TrashIcon />, danger: true, onSelect: () => setDeleteTarget(video) })
+    return items
+  }
 
   return (
     <div className={styles.page}>
       <LibraryTabs />
+
+      <RiskConfirmPopup
+        isOpen={deleteTarget !== null}
+        title="영상을 삭제할까요?"
+        description="삭제하면 다시 복구할 수 없어요."
+        confirmLabel="삭제"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            setVideos((prev) => prev.filter((video) => video.id !== deleteTarget.id))
+          }
+          setDeleteTarget(null)
+        }}
+      />
 
       <div className={styles.header}>
         <p className={styles.description}>AAY로 만든 영상을 확인하고 관리할 수 있어요.</p>
@@ -146,12 +180,19 @@ function LibraryVideosPage() {
 
       {view === 'grid' ? (
         <div className={styles.grid}>
-          {VIDEOS.map((video) => (
-            <button
+          {videos.map((video) => (
+            <div
               key={video.id}
-              type="button"
               className={styles.card}
+              role="button"
+              tabIndex={0}
               onClick={() => navigate(`/library/videos/${video.id}`)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  navigate(`/library/videos/${video.id}`)
+                }
+              }}
             >
               <div className={styles.thumbnail}>
                 <p className={styles.thumbnailLabel}>{video.ratio} 영상 미리보기</p>
@@ -168,12 +209,12 @@ function LibraryVideosPage() {
               <div className={styles.cardBody}>
                 <div className={styles.titleRow}>
                   <p className={styles.cardTitle}>{video.title}</p>
-                  <MoreIcon className={styles.cardMore} />
+                  <CardMenu items={getMenuItems(video)} triggerClassName={styles.cardMore} ariaLabel={`${video.title} 더보기`} />
                 </div>
                 <p className={styles.cardMeta}>{video.meta}</p>
                 <p className={styles.cardDate}>{video.dateLine}</p>
               </div>
-            </button>
+            </div>
           ))}
         </div>
       ) : (
@@ -187,12 +228,19 @@ function LibraryVideosPage() {
             <span className={styles.colPublish}>게시 정보</span>
             <span className={styles.colMore} />
           </div>
-          {VIDEOS.map((video) => (
-            <button
+          {videos.map((video) => (
+            <div
               key={video.id}
-              type="button"
               className={styles.tableRow}
+              role="button"
+              tabIndex={0}
               onClick={() => navigate(`/library/videos/${video.id}`)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  navigate(`/library/videos/${video.id}`)
+                }
+              }}
             >
               <span className={styles.colPreview}>
                 <span className={styles.rowThumbnail}>{video.ratio}</span>
@@ -205,9 +253,9 @@ function LibraryVideosPage() {
               <span className={[styles.colStatus, styles.rowStatus].join(' ')}>{video.status}</span>
               <span className={styles.colPublish}>{video.dateLine}</span>
               <span className={styles.colMore}>
-                <MoreIcon className={styles.rowMore} />
+                <CardMenu items={getMenuItems(video)} triggerClassName={styles.rowMore} ariaLabel={`${video.title} 더보기`} />
               </span>
-            </button>
+            </div>
           ))}
         </div>
       )}

@@ -1,0 +1,72 @@
+@use '../../../styles/tokens' as *;
+
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  padding: 0;
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.triggerIcon {
+  width: 16px;
+  height: 16px;
+  color: $color-text-muted;
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 160px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: $color-white;
+  border: 1px solid #dddddd;
+  border-radius: $radius-base;
+  box-shadow: $shadow-header;
+  z-index: 20;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font-family: $font-family-base;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-text;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+}
+
+.itemDanger {
+  color: $color-danger;
+}
+
+.itemIcon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

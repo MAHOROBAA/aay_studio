@@ -1,4 +1,4 @@
-import MoreIcon from '../MoreIcon/MoreIcon'
+import CardMenu, { type CardMenuItem } from '../CardMenu/CardMenu'
 import styles from './LibraryListRow.module.scss'
 
 type LibraryListRowProps = {
@@ -7,11 +7,23 @@ type LibraryListRowProps = {
   description: string
   metadataItems: string[]
   onClick: () => void
+  menuItems: CardMenuItem[]
 }
 
-function LibraryListRow({ title, badgeLabel, description, metadataItems, onClick }: LibraryListRowProps) {
+function LibraryListRow({ title, badgeLabel, description, metadataItems, onClick, menuItems }: LibraryListRowProps) {
   return (
-    <button type="button" className={styles.row} onClick={onClick}>
+    <div
+      className={styles.row}
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onClick()
+        }
+      }}
+    >
       <div className={styles.summary}>
         <div className={styles.titleRow}>
           <p className={styles.title}>{title}</p>
@@ -23,9 +35,9 @@ function LibraryListRow({ title, badgeLabel, description, metadataItems, onClick
         {metadataItems.map((item) => (
           <span key={item}>{item}</span>
         ))}
-        <MoreIcon className={styles.more} />
+        <CardMenu items={menuItems} triggerClassName={styles.more} ariaLabel={`${title} 더보기`} />
       </div>
-    </button>
+    </div>
   )
 }
 

@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LibraryDetailHeader from '../components/common/LibraryDetailHeader/LibraryDetailHeader'
 import DetailField from '../components/common/DetailField/DetailField'
 import InfoCard from '../components/common/InfoCard/InfoCard'
+import { RiskConfirmPopup } from '../components/common/Popup'
 import styles from './LibraryCharacterDetailPage.module.scss'
 
 const IMAGE_INFO_ITEMS = [
@@ -21,6 +23,7 @@ const MANAGEMENT_ITEMS = [
 
 function LibraryCharacterDetailPage() {
   const navigate = useNavigate()
+  const [isDeleteOpen, setDeleteOpen] = useState(false)
 
   return (
     <div className={styles.page}>
@@ -28,6 +31,16 @@ function LibraryCharacterDetailPage() {
         backLabel="← 캐릭터 목록"
         onBack={() => navigate('/library/characters')}
         title="캐릭터 상세"
+        onDelete={() => setDeleteOpen(true)}
+      />
+
+      <RiskConfirmPopup
+        isOpen={isDeleteOpen}
+        title="캐릭터를 삭제할까요?"
+        description="삭제하면 이후 새 영상 제작에서 이 캐릭터를 다시 선택할 수 없어요. 이미 만든 영상은 그대로 유지돼요."
+        confirmLabel="삭제"
+        onCancel={() => setDeleteOpen(false)}
+        onConfirm={() => navigate('/library/characters')}
       />
 
       <div className={styles.content}>

@@ -1,15 +1,27 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import ChevronRightIcon from '../components/common/ChevronRightIcon/ChevronRightIcon'
+import { RiskConfirmPopup } from '../components/common/Popup'
 import styles from './MyPage.module.scss'
 
 function MyPage() {
   const navigate = useNavigate()
+  const [isWithdrawalOpen, setWithdrawalOpen] = useState(false)
 
   return (
     <div className={styles.page}>
       <p className={styles.pageTitle}>마이페이지</p>
       <p className={styles.pageDescription}>계정과 크레딧, 연결된 플랫폼을 관리할 수 있어요.</p>
+
+      <RiskConfirmPopup
+        isOpen={isWithdrawalOpen}
+        title="계정을 탈퇴할까요?"
+        description="탈퇴하면 남은 크레딧과 연결 계정 정보가 삭제되며 복구할 수 없어요."
+        confirmLabel="탈퇴"
+        onCancel={() => setWithdrawalOpen(false)}
+        onConfirm={() => navigate('/')}
+      />
 
       <div className={styles.creditCard}>
         <div className={styles.creditHeader}>
@@ -112,7 +124,7 @@ function MyPage() {
           <p className={styles.withdrawalTitle}>계정 탈퇴</p>
           <p className={styles.withdrawalDescription}>탈퇴하면 남은 크레딧과 연결 계정 정보가 삭제되며 복구할 수 없어요.</p>
           <div className={styles.withdrawalAction}>
-            <Button type="button" variant="danger">
+            <Button type="button" variant="danger" onClick={() => setWithdrawalOpen(true)}>
               계정 탈퇴
             </Button>
           </div>

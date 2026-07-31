@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Stepper from '../components/common/Stepper/Stepper'
 import InfoCard from '../components/common/InfoCard/InfoCard'
 import VideoPreview from '../components/common/VideoPreview/VideoPreview'
+import InsufficientCreditPopup from '../components/common/InsufficientCreditPopup/InsufficientCreditPopup'
 import { useCreateFlow } from '../router/createFlow'
+import { CURRENT_CREDIT_BALANCE } from '../mocks/credit'
 import styles from './CreateReviewPage.module.scss'
 
 const VIDEO_INFO_ITEMS = [
@@ -15,13 +18,29 @@ const VIDEO_INFO_ITEMS = [
   { label: '사용 크레딧', value: '24 크레딧' },
 ]
 
+const REQUIRED_CREDIT = 24
+
 function CreateReviewPage() {
   const navigate = useNavigate()
   const flow = useCreateFlow()
   const briefPath = flow === 'free' ? '/create/free/brief' : '/create/settings'
+  const [isInsufficientOpen, setInsufficientOpen] = useState(false)
+
+  function handleRegenerate() {
+    if (CURRENT_CREDIT_BALANCE < REQUIRED_CREDIT) {
+      setInsufficientOpen(true)
+      return
+    }
+    navigate('/create/generating', { state: { flow } })
+  }
 
   return (
     <div className={styles.page}>
+      <InsufficientCreditPopup
+        isOpen={isInsufficientOpen}
+        requiredCredit={REQUIRED_CREDIT}
+        onCancel={() => setInsufficientOpen(false)}
+      />
       <h1 className={styles.heading}>Aaaay! 영상이 완성됐어요.</h1>
 
       {flow === 'free' && <Stepper current={4} />}
@@ -35,11 +54,7 @@ function CreateReviewPage() {
         <Button type="button" variant="secondary" onClick={() => navigate(briefPath, { state: { flow } })}>
           ← AI 기획 수정
         </Button>
-        <Button
-          type="button"
-          variant="primary"
-          onClick={() => navigate('/create/generating', { state: { flow } })}
-        >
+        <Button type="button" variant="primary" onClick={handleRegenerate}>
           다시 생성 · 24크레딧
         </Button>
         <Button type="button" variant="primary" onClick={() => navigate('/create/publish', { state: { flow } })}>

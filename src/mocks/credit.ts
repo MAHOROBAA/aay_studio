@@ -1,0 +1,1 @@
+export const CURRENT_CREDIT_BALANCE = 1500

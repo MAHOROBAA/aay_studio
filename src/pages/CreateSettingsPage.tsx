@@ -1,7 +1,12 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import InfoCard from '../components/common/InfoCard/InfoCard'
+import InsufficientCreditPopup from '../components/common/InsufficientCreditPopup/InsufficientCreditPopup'
+import { CURRENT_CREDIT_BALANCE } from '../mocks/credit'
 import styles from './CreateSettingsPage.module.scss'
+
+const REQUIRED_CREDIT = 24
 
 const DIRECTION_ITEMS = [
   { label: '분위기', value: '차분하고 아늑하게' },
@@ -41,9 +46,23 @@ const GENERATION_ITEMS = [
 
 function CreateSettingsPage() {
   const navigate = useNavigate()
+  const [isInsufficientOpen, setInsufficientOpen] = useState(false)
+
+  function handleGenerate() {
+    if (CURRENT_CREDIT_BALANCE < REQUIRED_CREDIT) {
+      setInsufficientOpen(true)
+      return
+    }
+    navigate('/create/generating', { state: { flow: 'story' } })
+  }
 
   return (
     <div className={styles.page}>
+      <InsufficientCreditPopup
+        isOpen={isInsufficientOpen}
+        requiredCredit={REQUIRED_CREDIT}
+        onCancel={() => setInsufficientOpen(false)}
+      />
       <div className={styles.content}>
         <h1 className={styles.heading}>AI 기획을 확인해보세요</h1>
 
@@ -96,11 +115,7 @@ function CreateSettingsPage() {
           <Button type="button" variant="secondary" onClick={() => navigate('/create/story/setup')}>
             ← 설정 수정
           </Button>
-          <Button
-            type="button"
-            variant="primary"
-            onClick={() => navigate('/create/generating', { state: { flow: 'story' } })}
-          >
+          <Button type="button" variant="primary" onClick={handleGenerate}>
             생성 · 24크레딧 →
           </Button>
         </div>

@@ -1,7 +1,11 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
 import LibraryListRow from '../components/common/LibraryListRow/LibraryListRow'
+import EditIcon from '../components/common/EditIcon/EditIcon'
+import TrashIcon from '../components/common/TrashIcon/TrashIcon'
+import { RiskConfirmPopup } from '../components/common/Popup'
 import styles from './LibraryStoriesPage.module.scss'
 
 type StoryRowData = {
@@ -15,7 +19,7 @@ type StoryRowData = {
   updatedAt: string
 }
 
-const STORIES: StoryRowData[] = [
+const INITIAL_STORIES: StoryRowData[] = [
   {
     id: 's1',
     title: '김햄찌의 첫 출근',
@@ -84,14 +88,30 @@ function ChevronIcon() {
 
 function LibraryStoriesPage() {
   const navigate = useNavigate()
+  const [stories, setStories] = useState(INITIAL_STORIES)
+  const [deleteTarget, setDeleteTarget] = useState<StoryRowData | null>(null)
 
   return (
     <div className={styles.page}>
       <LibraryTabs />
 
+      <RiskConfirmPopup
+        isOpen={deleteTarget !== null}
+        title="스토리를 삭제할까요?"
+        description="삭제하면 다시 복구할 수 없어요. 이미 만든 영상은 그대로 유지돼요."
+        confirmLabel="삭제"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            setStories((prev) => prev.filter((story) => story.id !== deleteTarget.id))
+          }
+          setDeleteTarget(null)
+        }}
+      />
+
       <div className={styles.header}>
         <p className={styles.description}>저장한 스토리를 확인하고 이어서 만들 수 있어요.</p>
-        <Button type="button" variant="primary">
+        <Button type="button" variant="primary" onClick={() => navigate('/library/stories/new')}>
           + 새 스토리 만들기
         </Button>
       </div>
@@ -111,7 +131,7 @@ function LibraryStoriesPage() {
       </div>
 
       <div className={styles.list}>
-        {STORIES.map((story) => (
+        {stories.map((story) => (
           <LibraryListRow
             key={story.id}
             title={story.title}
@@ -119,6 +139,10 @@ function LibraryStoriesPage() {
             description={story.summary}
             metadataItems={[story.worldName, `캐릭터 ${story.characterCount}명 · 영상 ${story.videoCount}개`, story.updatedAt]}
             onClick={() => navigate(`/library/stories/${story.id}`)}
+            menuItems={[
+              { key: 'edit', label: '수정', icon: <EditIcon />, onSelect: () => {} },
+              { key: 'delete', label: '삭제', icon: <TrashIcon />, danger: true, onSelect: () => setDeleteTarget(story) },
+            ]}
           />
         ))}
       </div>

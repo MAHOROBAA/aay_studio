@@ -1,0 +1,187 @@
+@use '../../../styles/tokens' as *;
+
+.dim {
+  position: fixed;
+  inset: 0;
+  background: $color-dim;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 40px 0;
+}
+
+.card {
+  width: 700px;
+  max-height: 100%;
+  padding: 30px;
+  border-radius: $radius-base;
+  background: $color-white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.brand {
+  align-self: flex-start;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-black;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-black;
+  text-align: center;
+}
+
+.body {
+  width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tabs {
+  align-self: center;
+  display: flex;
+  gap: 10px;
+}
+
+.tab {
+  height: 38px;
+  padding: 0 20px;
+  border: 1px solid $color-text-muted;
+  border-radius: $radius-base;
+  background: $color-white;
+  color: $color-text-muted;
+  font-family: $font-family-base;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tabActive {
+  border: none;
+  background: $color-black;
+  color: $color-white;
+}
+
+.field {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.label {
+  flex-shrink: 0;
+  width: 100px;
+  margin: 0;
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.input {
+  flex: 1;
+  height: 38px;
+  padding: 0 13px;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+  font-family: $font-family-base;
+  font-size: 13px;
+  color: $color-text;
+
+  &::placeholder {
+    color: #888888;
+  }
+}
+
+.textarea {
+  flex: 1;
+  height: 96px;
+  padding: 13px;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+  font-family: $font-family-base;
+  font-size: 13px;
+  line-height: 1.5;
+  color: $color-text;
+  resize: none;
+
+  &::placeholder {
+    color: #888888;
+  }
+}
+
+.imageBox {
+  flex: 1;
+  min-height: 140px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 1px solid $color-text;
+  border-radius: $radius-base;
+  text-align: center;
+}
+
+.imageHint {
+  margin: 0;
+  font-size: 13px;
+  color: $color-text-muted;
+}
+
+.imageReadyLabel {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.refImageList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.refImageChip {
+  padding: 6px 12px;
+  border: 1px solid #dddddd;
+  border-radius: 999px;
+  background: #f8f8f8;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.refImageActions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions {
+  width: 640px;
+  display: flex;
+  gap: 20px;
+}
+
+.cancelButton {
+  flex: 0 0 140px;
+}
+
+.confirmButton {
+  flex: 1;
+}

@@ -17,8 +17,10 @@ import LibraryCharactersPage from '../pages/LibraryCharactersPage'
 import LibraryCharacterDetailPage from '../pages/LibraryCharacterDetailPage'
 import LibraryWorldsPage from '../pages/LibraryWorldsPage'
 import LibraryWorldDetailPage from '../pages/LibraryWorldDetailPage'
+import LibraryWorldFormPage from '../pages/LibraryWorldFormPage'
 import LibraryStoriesPage from '../pages/LibraryStoriesPage'
 import LibraryStoryDetailPage from '../pages/LibraryStoryDetailPage'
+import LibraryStoryFormPage from '../pages/LibraryStoryFormPage'
 import MyPage from '../pages/MyPage'
 import MyPageCreditHistoryPage from '../pages/MyPageCreditHistoryPage'
 import MyPageCreditChargePage from '../pages/MyPageCreditChargePage'
@@ -45,9 +47,13 @@ function AppRouter() {
           <Route path="/library/characters" element={<LibraryCharactersPage />} />
           <Route path="/library/characters/:characterId" element={<LibraryCharacterDetailPage />} />
           <Route path="/library/worlds" element={<LibraryWorldsPage />} />
+          <Route path="/library/worlds/new" element={<LibraryWorldFormPage />} />
           <Route path="/library/worlds/:worldId" element={<LibraryWorldDetailPage />} />
+          <Route path="/library/worlds/:worldId/edit" element={<LibraryWorldFormPage />} />
           <Route path="/library/stories" element={<LibraryStoriesPage />} />
+          <Route path="/library/stories/new" element={<LibraryStoryFormPage />} />
           <Route path="/library/stories/:storyId" element={<LibraryStoryDetailPage />} />
+          <Route path="/library/stories/:storyId/edit" element={<LibraryStoryFormPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/mypage/credits" element={<MyPageCreditHistoryPage />} />
           <Route path="/mypage/credits/charge" element={<MyPageCreditChargePage />} />

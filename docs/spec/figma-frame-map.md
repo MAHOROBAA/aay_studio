@@ -30,8 +30,10 @@ Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`) �
 | 라이브러리 - 캐릭터 상세 | `158:310` | addendum → `/library/characters/:characterId`. 배치 F 완료. (동일 내용의 중복 프레임 `151:395`는 사용자가 Figma에서 삭제함) |
 | 라이브러리 - 세계관 | `133:444` | addendum → `/library/worlds`. 배치 E 때는 placeholder였으나 배치 F에서 실제 구현 완료 |
 | 라이브러리 - 세계관 상세 | `151:750` | addendum → `/library/worlds/:worldId`. 배치 F 완료 |
+| 라이브러리 - 세계관 만들기/수정 | `203:1808` | addendum 11.2 → `/library/worlds/new`, `/library/worlds/:worldId/edit`. 3단계 배치 D 완료 |
 | 라이브러리 - 스토리 | `151:858` | addendum → `/library/stories`. 배치 F 완료 |
 | 라이브러리 - 스토리 상세 | `151:990` | addendum → `/library/stories/:storyId`. 배치 F 완료 |
+| 라이브러리 - 스토리 만들기/수정 | `203:1893` | addendum 11.3 → `/library/stories/new`, `/library/stories/:storyId/edit`. 3단계 배치 D 완료 |
 | 마이페이지 | `105:234` | 5.11 마이페이지 → `/mypage`. spec-addendum-credit.md 14장 크레딧 요약 UI 포함, 배치 G 완료 |
 | 마이페이지 - 크레딧 내역 | `176:1145` | spec-addendum-credit.md 14장 이용 내역 → `/mypage/credits`. 배치 G 완료 |
 | 마이페이지 - 크레딧 충전 | `176:1231` | spec-addendum-credit.md 8~10장 충전 상품 UI → `/mypage/credits/charge`. 배치 G 완료 |
@@ -62,4 +64,8 @@ Figma 파일 `AAY` (`https://www.figma.com/design/s1vcVinETNj4YPpZH4z35B/AAY`) �
 - 마이페이지 3화면(`105:234`/`176:1145`/`176:1231`) 모두 Button 컴포넌트 인스턴스가 포함된 컨테이너 노드에서
   `get_design_context`가 반복적으로 5분 타임아웃/연결 끊김이 났다. 인스턴스가 없는 leaf 텍스트 노드·서브프레임 단위로
   쪼개서 조회하면 빠르게 응답한다(이 세 화면에서도 동일하게 적용됨 — 배치 E 확인 결과의 팁 참고).
+- **세계관/스토리 만들기·수정 폼(`203:1808`, `203:1893`)은 3단계 배치 D 도중 사용자가 Figma에 추가했다고 알려줘서
+  발견했다.** 처음에는 페이지 전체 캐시된 metadata 덤프에서 "만들기"/"수정" 키워드로 찾았을 때 없어서 "Figma에 디자인이
+  없다"고 판단해 보류했었는데, 사용자가 실제로는 있다고 알려줘서 `get_metadata`(nodeId `0:1`)를 새로 다시 호출해서
+  찾아냈다. **캐시된 덤프 파일을 너무 오래 신뢰하지 말 것** — Figma 파일은 세션 중에도 계속 바뀐다.
 - 이 표는 Figma 파일이 수정되면 최신 상태가 아닐 수 있다. node id 조회가 실패하면 이 표를 맹신하지 말고 `get_metadata`로 재확인한다.

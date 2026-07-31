@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
+import { CURRENT_CREDIT_BALANCE } from '../../../mocks/credit'
 import styles from './Sidebar.module.scss'
 
 const MENU_ITEMS = [
@@ -65,7 +66,7 @@ function Sidebar() {
               strokeLinejoin="round"
             />
           </svg>
-          <span>1,500크레딧</span>
+          <span>{CURRENT_CREDIT_BALANCE.toLocaleString()}크레딧</span>
         </div>
       )}
     </aside>

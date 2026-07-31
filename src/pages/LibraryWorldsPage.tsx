@@ -1,7 +1,11 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
 import LibraryListRow from '../components/common/LibraryListRow/LibraryListRow'
+import EditIcon from '../components/common/EditIcon/EditIcon'
+import TrashIcon from '../components/common/TrashIcon/TrashIcon'
+import { RiskConfirmPopup } from '../components/common/Popup'
 import styles from './LibraryWorldsPage.module.scss'
 
 type WorldRowData = {
@@ -14,7 +18,7 @@ type WorldRowData = {
   updatedAt: string
 }
 
-const WORLDS: WorldRowData[] = [
+const INITIAL_WORLDS: WorldRowData[] = [
   {
     id: 'w1',
     name: '햄찌네 회사생활',
@@ -78,14 +82,30 @@ function ChevronIcon() {
 
 function LibraryWorldsPage() {
   const navigate = useNavigate()
+  const [worlds, setWorlds] = useState(INITIAL_WORLDS)
+  const [deleteTarget, setDeleteTarget] = useState<WorldRowData | null>(null)
 
   return (
     <div className={styles.page}>
       <LibraryTabs />
 
+      <RiskConfirmPopup
+        isOpen={deleteTarget !== null}
+        title="세계관을 삭제할까요?"
+        description="삭제하면 연결된 스토리와의 연결 정보가 함께 해제돼요. 이미 만든 영상은 그대로 유지돼요."
+        confirmLabel="삭제"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            setWorlds((prev) => prev.filter((world) => world.id !== deleteTarget.id))
+          }
+          setDeleteTarget(null)
+        }}
+      />
+
       <div className={styles.header}>
         <p className={styles.description}>저장한 세계관을 확인하고 관리할 수 있어요.</p>
-        <Button type="button" variant="primary">
+        <Button type="button" variant="primary" onClick={() => navigate('/library/worlds/new')}>
           + 새 세계관 만들기
         </Button>
       </div>
@@ -105,7 +125,7 @@ function LibraryWorldsPage() {
       </div>
 
       <div className={styles.list}>
-        {WORLDS.map((world) => (
+        {worlds.map((world) => (
           <LibraryListRow
             key={world.id}
             title={world.name}
@@ -113,6 +133,10 @@ function LibraryWorldsPage() {
             description={world.summary}
             metadataItems={[`캐릭터 ${world.characterCount}명`, `영상 ${world.videoCount}개`, world.updatedAt]}
             onClick={() => navigate(`/library/worlds/${world.id}`)}
+            menuItems={[
+              { key: 'edit', label: '수정', icon: <EditIcon />, onSelect: () => {} },
+              { key: 'delete', label: '삭제', icon: <TrashIcon />, danger: true, onSelect: () => setDeleteTarget(world) },
+            ]}
           />
         ))}
       </div>

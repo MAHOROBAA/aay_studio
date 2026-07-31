@@ -2,10 +2,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
-import MoreIcon from '../components/common/MoreIcon/MoreIcon'
 import GridViewIcon from '../components/common/GridViewIcon/GridViewIcon'
 import ListViewIcon from '../components/common/ListViewIcon/ListViewIcon'
 import ChevronDownIcon from '../components/common/ChevronDownIcon/ChevronDownIcon'
+import CardMenu, { type CardMenuItem } from '../components/common/CardMenu/CardMenu'
+import EditIcon from '../components/common/EditIcon/EditIcon'
+import TrashIcon from '../components/common/TrashIcon/TrashIcon'
+import { RiskConfirmPopup, AlertPopup } from '../components/common/Popup'
+import CharacterCreatePopup, { type NewCharacter } from '../components/common/CharacterCreatePopup/CharacterCreatePopup'
 import styles from './LibraryCharactersPage.module.scss'
 
 type CharacterCardData = {
@@ -16,7 +20,7 @@ type CharacterCardData = {
   updatedAt: string
 }
 
-const CHARACTERS: CharacterCardData[] = [
+const INITIAL_CHARACTERS: CharacterCardData[] = [
   {
     id: 'c1',
     name: '김햄찌',
@@ -64,14 +68,55 @@ const CHARACTERS: CharacterCardData[] = [
 function LibraryCharactersPage() {
   const navigate = useNavigate()
   const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [characters, setCharacters] = useState(INITIAL_CHARACTERS)
+  const [deleteTarget, setDeleteTarget] = useState<CharacterCardData | null>(null)
+  const [isCreateOpen, setCreateOpen] = useState(false)
+  const [isCreatedAlertOpen, setCreatedAlertOpen] = useState(false)
+
+  function handleCreateCharacter(character: NewCharacter) {
+    setCharacters((prev) => [
+      { id: `c-${Date.now()}`, name: character.name, summary: character.summary, imageInfo: character.imageInfo, updatedAt: '2026.07.31' },
+      ...prev,
+    ])
+    setCreateOpen(false)
+    setCreatedAlertOpen(true)
+  }
+
+  const getMenuItems = (character: CharacterCardData): CardMenuItem[] => [
+    { key: 'edit', label: '수정', icon: <EditIcon />, onSelect: () => {} },
+    { key: 'delete', label: '삭제', icon: <TrashIcon />, danger: true, onSelect: () => setDeleteTarget(character) },
+  ]
 
   return (
     <div className={styles.page}>
       <LibraryTabs />
 
+      <RiskConfirmPopup
+        isOpen={deleteTarget !== null}
+        title="캐릭터를 삭제할까요?"
+        description="삭제하면 이후 새 영상 제작에서 이 캐릭터를 다시 선택할 수 없어요. 이미 만든 영상은 그대로 유지돼요."
+        confirmLabel="삭제"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget) {
+            setCharacters((prev) => prev.filter((character) => character.id !== deleteTarget.id))
+          }
+          setDeleteTarget(null)
+        }}
+      />
+
+      <CharacterCreatePopup isOpen={isCreateOpen} onClose={() => setCreateOpen(false)} onCreate={handleCreateCharacter} />
+
+      <AlertPopup
+        isOpen={isCreatedAlertOpen}
+        title="캐릭터를 만들었어요."
+        description="새로 만든 캐릭터가 목록 맨 앞에 추가됐어요."
+        onConfirm={() => setCreatedAlertOpen(false)}
+      />
+
       <div className={styles.header}>
         <p className={styles.description}>저장한 캐릭터를 확인하고 관리할 수 있어요.</p>
-        <Button type="button" variant="primary">
+        <Button type="button" variant="primary" onClick={() => setCreateOpen(true)}>
           + 새 캐릭터 만들기
         </Button>
       </div>
@@ -106,12 +151,19 @@ function LibraryCharactersPage() {
 
       {view === 'grid' ? (
         <div className={styles.grid}>
-          {CHARACTERS.map((character) => (
-            <button
+          {characters.map((character) => (
+            <div
               key={character.id}
-              type="button"
               className={styles.card}
+              role="button"
+              tabIndex={0}
               onClick={() => navigate(`/library/characters/${character.id}`)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  navigate(`/library/characters/${character.id}`)
+                }
+              }}
             >
               <div className={styles.thumbnail}>
                 <p className={styles.thumbnailLabel}>캐릭터 대표 이미지</p>
@@ -119,14 +171,14 @@ function LibraryCharactersPage() {
               <div className={styles.cardBody}>
                 <div className={styles.titleRow}>
                   <p className={styles.cardTitle}>{character.name}</p>
-                  <MoreIcon className={styles.cardMore} />
+                  <CardMenu items={getMenuItems(character)} triggerClassName={styles.cardMore} ariaLabel={`${character.name} 더보기`} />
                 </div>
                 <p className={styles.cardMeta}>{character.summary}</p>
                 <p className={styles.cardMeta}>
                   {character.imageInfo} · {character.updatedAt} 수정
                 </p>
               </div>
-            </button>
+            </div>
           ))}
         </div>
       ) : (
@@ -139,12 +191,19 @@ function LibraryCharactersPage() {
             <span className={styles.colUpdated}>최종 수정일</span>
             <span className={styles.colMore} />
           </div>
-          {CHARACTERS.map((character) => (
-            <button
+          {characters.map((character) => (
+            <div
               key={character.id}
-              type="button"
               className={styles.tableRow}
+              role="button"
+              tabIndex={0}
               onClick={() => navigate(`/library/characters/${character.id}`)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  navigate(`/library/characters/${character.id}`)
+                }
+              }}
             >
               <span className={styles.colImage}>
                 <span className={styles.rowImage}>이미지</span>
@@ -154,9 +213,9 @@ function LibraryCharactersPage() {
               <span className={styles.colImageInfo}>{character.imageInfo}</span>
               <span className={styles.colUpdated}>{character.updatedAt}</span>
               <span className={styles.colMore}>
-                <MoreIcon className={styles.rowMore} />
+                <CardMenu items={getMenuItems(character)} triggerClassName={styles.rowMore} ariaLabel={`${character.name} 더보기`} />
               </span>
-            </button>
+            </div>
           ))}
         </div>
       )}

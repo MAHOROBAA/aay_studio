@@ -1,7 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import LibraryDetailHeader from '../components/common/LibraryDetailHeader/LibraryDetailHeader'
 import DetailField from '../components/common/DetailField/DetailField'
 import InfoCard from '../components/common/InfoCard/InfoCard'
+import { RiskConfirmPopup } from '../components/common/Popup'
 import styles from './LibraryStoryDetailPage.module.scss'
 
 const CONNECTION_ITEMS = [
@@ -21,6 +23,8 @@ const MANAGEMENT_ITEMS = [
 
 function LibraryStoryDetailPage() {
   const navigate = useNavigate()
+  const { storyId } = useParams()
+  const [isDeleteOpen, setDeleteOpen] = useState(false)
 
   return (
     <div className={styles.page}>
@@ -28,6 +32,17 @@ function LibraryStoryDetailPage() {
         backLabel="← 스토리 목록"
         onBack={() => navigate('/library/stories')}
         title="스토리 상세"
+        onEdit={() => navigate(`/library/stories/${storyId}/edit`)}
+        onDelete={() => setDeleteOpen(true)}
+      />
+
+      <RiskConfirmPopup
+        isOpen={isDeleteOpen}
+        title="스토리를 삭제할까요?"
+        description="삭제하면 다시 복구할 수 없어요. 이미 만든 영상은 그대로 유지돼요."
+        confirmLabel="삭제"
+        onCancel={() => setDeleteOpen(false)}
+        onConfirm={() => navigate('/library/stories')}
       />
 
       <div className={styles.content}>
