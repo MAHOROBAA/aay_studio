@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
 import LibraryListRow from '../components/common/LibraryListRow/LibraryListRow'
 import EditIcon from '../components/common/EditIcon/EditIcon'
 import TrashIcon from '../components/common/TrashIcon/TrashIcon'
+import FilterDropdown from '../components/common/FilterDropdown/FilterDropdown'
 import { RiskConfirmPopup } from '../components/common/Popup'
 import styles from './LibraryWorldsPage.module.scss'
 
@@ -66,24 +67,28 @@ const INITIAL_WORLDS: WorldRowData[] = [
   },
 ]
 
-function ChevronIcon() {
-  return (
-    <svg className={styles.filterChevron} viewBox="0 0 13.3333 13.3333" fill="none" aria-hidden="true">
-      <path
-        d="M9.8313 5.08433L6.66666 8.24904L3.50195 5.08433"
-        stroke="currentColor"
-        strokeWidth="0.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
+const AUTHOR_TYPE_OPTIONS = ['사용자 작성', 'AI 추천']
 
 function LibraryWorldsPage() {
   const navigate = useNavigate()
   const [worlds, setWorlds] = useState(INITIAL_WORLDS)
   const [deleteTarget, setDeleteTarget] = useState<WorldRowData | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [authorTypeFilter, setAuthorTypeFilter] = useState('')
+  const [sortOrder, setSortOrder] = useState<'recent' | 'oldest'>('recent')
+
+  const visibleWorlds = useMemo(() => {
+    const filtered = worlds.filter((world) => {
+      if (searchQuery.trim() && !world.name.includes(searchQuery.trim())) {
+        return false
+      }
+      if (authorTypeFilter && world.authorType !== authorTypeFilter) {
+        return false
+      }
+      return true
+    })
+    return sortOrder === 'oldest' ? [...filtered].reverse() : filtered
+  }, [worlds, searchQuery, authorTypeFilter, sortOrder])
 
   return (
     <div className={styles.page}>
@@ -112,20 +117,37 @@ function LibraryWorldsPage() {
 
       <div className={styles.toolbar}>
         <div className={styles.searchInput}>
-          <input type="text" placeholder="세계관 이름을 검색해 주세요." />
+          <input
+            type="text"
+            placeholder="세계관 이름을 검색해 주세요."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
         </div>
-        <button type="button" className={styles.filter}>
-          작성 방식 · 전체
-          <ChevronIcon />
-        </button>
-        <button type="button" className={[styles.filter, styles.sort].join(' ')}>
-          최근 수정순
-          <ChevronIcon />
-        </button>
+        <FilterDropdown
+          value={authorTypeFilter}
+          placeholder="작성 방식 · 전체"
+          options={AUTHOR_TYPE_OPTIONS.map((type) => ({ label: type, value: type }))}
+          onChange={setAuthorTypeFilter}
+          triggerClassName={styles.filter}
+        />
+        <FilterDropdown
+          value={sortOrder}
+          placeholder="최근 수정순"
+          includeAllOption={false}
+          options={[
+            { label: '최근 수정순', value: 'recent' },
+            { label: '오래된 순', value: 'oldest' },
+          ]}
+          onChange={(next) => setSortOrder(next as 'recent' | 'oldest')}
+          triggerClassName={[styles.filter, styles.sort].join(' ')}
+        />
       </div>
 
+      {visibleWorlds.length === 0 && <p className={styles.emptyState}>검색 결과가 없어요.</p>}
+
       <div className={styles.list}>
-        {worlds.map((world) => (
+        {visibleWorlds.map((world) => (
           <LibraryListRow
             key={world.id}
             title={world.name}

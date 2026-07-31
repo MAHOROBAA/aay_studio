@@ -1,17 +1,18 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
 import StatusBadge, { type VideoStatus } from '../components/common/StatusBadge/StatusBadge'
 import GridViewIcon from '../components/common/GridViewIcon/GridViewIcon'
 import ListViewIcon from '../components/common/ListViewIcon/ListViewIcon'
-import ChevronDownIcon from '../components/common/ChevronDownIcon/ChevronDownIcon'
+import FilterDropdown from '../components/common/FilterDropdown/FilterDropdown'
 import CardMenu, { type CardMenuItem } from '../components/common/CardMenu/CardMenu'
 import DownloadIcon from '../components/common/DownloadIcon/DownloadIcon'
 import ClockIcon from '../components/common/ClockIcon/ClockIcon'
 import PublishSettingsIcon from '../components/common/PublishSettingsIcon/PublishSettingsIcon'
 import TrashIcon from '../components/common/TrashIcon/TrashIcon'
 import { RiskConfirmPopup } from '../components/common/Popup'
+import { useViewPreference } from '../hooks/useViewPreference'
 import styles from './LibraryVideosPage.module.scss'
 
 type VideoCardData = {
@@ -98,11 +99,34 @@ const INITIAL_VIDEOS: VideoCardData[] = [
   },
 ]
 
+const STATUS_OPTIONS: VideoStatus[] = ['게시 완료', '예약 게시', '게시 실패']
+const METHOD_OPTIONS = ['스토리 영상', '자유 영상']
+
 function LibraryVideosPage() {
   const navigate = useNavigate()
-  const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [view, setView] = useViewPreference('aay.library.videos.view')
   const [videos, setVideos] = useState(INITIAL_VIDEOS)
   const [deleteTarget, setDeleteTarget] = useState<VideoCardData | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<VideoStatus | ''>('')
+  const [methodFilter, setMethodFilter] = useState('')
+  const [sortOrder, setSortOrder] = useState<'recent' | 'oldest'>('recent')
+
+  const visibleVideos = useMemo(() => {
+    const filtered = videos.filter((video) => {
+      if (searchQuery.trim() && !video.title.includes(searchQuery.trim())) {
+        return false
+      }
+      if (statusFilter && video.status !== statusFilter) {
+        return false
+      }
+      if (methodFilter && video.method !== methodFilter) {
+        return false
+      }
+      return true
+    })
+    return sortOrder === 'oldest' ? [...filtered].reverse() : filtered
+  }, [videos, searchQuery, statusFilter, methodFilter, sortOrder])
 
   const getMenuItems = (video: VideoCardData): CardMenuItem[] => {
     const items: CardMenuItem[] = [{ key: 'download', label: '다운로드', icon: <DownloadIcon />, onSelect: () => {} }]
@@ -144,20 +168,38 @@ function LibraryVideosPage() {
 
       <div className={styles.toolbar}>
         <div className={styles.searchInput}>
-          <input type="text" placeholder="영상 제목을 검색해 주세요." />
+          <input
+            type="text"
+            placeholder="영상 제목을 검색해 주세요."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
         </div>
-        <button type="button" className={styles.filter}>
-          상태 · 전체
-          <ChevronDownIcon className={styles.filterChevron} />
-        </button>
-        <button type="button" className={styles.filter}>
-          제작 방식 · 전체
-          <ChevronDownIcon className={styles.filterChevron} />
-        </button>
-        <button type="button" className={[styles.filter, styles.sort].join(' ')}>
-          최근 생성순
-          <ChevronDownIcon className={styles.filterChevron} />
-        </button>
+        <FilterDropdown
+          value={statusFilter}
+          placeholder="상태 · 전체"
+          options={STATUS_OPTIONS.map((status) => ({ label: status, value: status }))}
+          onChange={(next) => setStatusFilter(next as VideoStatus | '')}
+          triggerClassName={styles.filter}
+        />
+        <FilterDropdown
+          value={methodFilter}
+          placeholder="제작 방식 · 전체"
+          options={METHOD_OPTIONS.map((method) => ({ label: method, value: method }))}
+          onChange={setMethodFilter}
+          triggerClassName={styles.filter}
+        />
+        <FilterDropdown
+          value={sortOrder}
+          placeholder="최근 생성순"
+          includeAllOption={false}
+          options={[
+            { label: '최근 생성순', value: 'recent' },
+            { label: '오래된 순', value: 'oldest' },
+          ]}
+          onChange={(next) => setSortOrder(next as 'recent' | 'oldest')}
+          triggerClassName={[styles.filter, styles.sort].join(' ')}
+        />
         <div className={styles.viewToggle}>
           <button
             type="button"
@@ -178,9 +220,11 @@ function LibraryVideosPage() {
         </div>
       </div>
 
-      {view === 'grid' ? (
+      {visibleVideos.length === 0 ? (
+        <p className={styles.emptyState}>검색 결과가 없어요.</p>
+      ) : view === 'grid' ? (
         <div className={styles.grid}>
-          {videos.map((video) => (
+          {visibleVideos.map((video) => (
             <div
               key={video.id}
               className={styles.card}
@@ -228,7 +272,7 @@ function LibraryVideosPage() {
             <span className={styles.colPublish}>게시 정보</span>
             <span className={styles.colMore} />
           </div>
-          {videos.map((video) => (
+          {visibleVideos.map((video) => (
             <div
               key={video.id}
               className={styles.tableRow}
@@ -251,7 +295,7 @@ function LibraryVideosPage() {
                 {video.ratio} · {video.durationSeconds}
               </span>
               <span className={[styles.colStatus, styles.rowStatus].join(' ')}>{video.status}</span>
-              <span className={styles.colPublish}>{video.dateLine}</span>
+              <span className={styles.colPublish}>{video.status === '게시 실패' ? '다시 시도해 주세요' : video.dateLine}</span>
               <span className={styles.colMore}>
                 <CardMenu items={getMenuItems(video)} triggerClassName={styles.rowMore} ariaLabel={`${video.title} 더보기`} />
               </span>

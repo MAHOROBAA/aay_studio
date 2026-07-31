@@ -1,15 +1,16 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
 import GridViewIcon from '../components/common/GridViewIcon/GridViewIcon'
 import ListViewIcon from '../components/common/ListViewIcon/ListViewIcon'
-import ChevronDownIcon from '../components/common/ChevronDownIcon/ChevronDownIcon'
+import FilterDropdown from '../components/common/FilterDropdown/FilterDropdown'
 import CardMenu, { type CardMenuItem } from '../components/common/CardMenu/CardMenu'
 import EditIcon from '../components/common/EditIcon/EditIcon'
 import TrashIcon from '../components/common/TrashIcon/TrashIcon'
 import { RiskConfirmPopup, AlertPopup } from '../components/common/Popup'
 import CharacterCreatePopup, { type NewCharacter } from '../components/common/CharacterCreatePopup/CharacterCreatePopup'
+import { useViewPreference } from '../hooks/useViewPreference'
 import styles from './LibraryCharactersPage.module.scss'
 
 type CharacterCardData = {
@@ -67,11 +68,13 @@ const INITIAL_CHARACTERS: CharacterCardData[] = [
 
 function LibraryCharactersPage() {
   const navigate = useNavigate()
-  const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [view, setView] = useViewPreference('aay.library.characters.view')
   const [characters, setCharacters] = useState(INITIAL_CHARACTERS)
   const [deleteTarget, setDeleteTarget] = useState<CharacterCardData | null>(null)
   const [isCreateOpen, setCreateOpen] = useState(false)
   const [isCreatedAlertOpen, setCreatedAlertOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortOrder, setSortOrder] = useState<'recent' | 'oldest'>('recent')
 
   function handleCreateCharacter(character: NewCharacter) {
     setCharacters((prev) => [
@@ -81,6 +84,13 @@ function LibraryCharactersPage() {
     setCreateOpen(false)
     setCreatedAlertOpen(true)
   }
+
+  const visibleCharacters = useMemo(() => {
+    const filtered = characters.filter(
+      (character) => !searchQuery.trim() || character.name.includes(searchQuery.trim()),
+    )
+    return sortOrder === 'oldest' ? [...filtered].reverse() : filtered
+  }, [characters, searchQuery, sortOrder])
 
   const getMenuItems = (character: CharacterCardData): CardMenuItem[] => [
     { key: 'edit', label: '수정', icon: <EditIcon />, onSelect: () => {} },
@@ -123,12 +133,24 @@ function LibraryCharactersPage() {
 
       <div className={styles.toolbar}>
         <div className={styles.searchInput}>
-          <input type="text" placeholder="캐릭터 이름을 검색해 주세요." />
+          <input
+            type="text"
+            placeholder="캐릭터 이름을 검색해 주세요."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
         </div>
-        <button type="button" className={styles.sort}>
-          최근 수정순
-          <ChevronDownIcon className={styles.filterChevron} />
-        </button>
+        <FilterDropdown
+          value={sortOrder}
+          placeholder="최근 수정순"
+          includeAllOption={false}
+          options={[
+            { label: '최근 수정순', value: 'recent' },
+            { label: '오래된 순', value: 'oldest' },
+          ]}
+          onChange={(next) => setSortOrder(next as 'recent' | 'oldest')}
+          triggerClassName={styles.sort}
+        />
         <div className={styles.viewToggle}>
           <button
             type="button"
@@ -149,9 +171,11 @@ function LibraryCharactersPage() {
         </div>
       </div>
 
-      {view === 'grid' ? (
+      {visibleCharacters.length === 0 ? (
+        <p className={styles.emptyState}>검색 결과가 없어요.</p>
+      ) : view === 'grid' ? (
         <div className={styles.grid}>
-          {characters.map((character) => (
+          {visibleCharacters.map((character) => (
             <div
               key={character.id}
               className={styles.card}
@@ -191,7 +215,7 @@ function LibraryCharactersPage() {
             <span className={styles.colUpdated}>최종 수정일</span>
             <span className={styles.colMore} />
           </div>
-          {characters.map((character) => (
+          {visibleCharacters.map((character) => (
             <div
               key={character.id}
               className={styles.tableRow}

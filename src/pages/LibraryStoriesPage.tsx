@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import LibraryTabs from '../components/common/LibraryTabs/LibraryTabs'
 import LibraryListRow from '../components/common/LibraryListRow/LibraryListRow'
 import EditIcon from '../components/common/EditIcon/EditIcon'
 import TrashIcon from '../components/common/TrashIcon/TrashIcon'
+import FilterDropdown from '../components/common/FilterDropdown/FilterDropdown'
 import { RiskConfirmPopup } from '../components/common/Popup'
 import styles from './LibraryStoriesPage.module.scss'
 
@@ -72,24 +73,28 @@ const INITIAL_STORIES: StoryRowData[] = [
   },
 ]
 
-function ChevronIcon() {
-  return (
-    <svg className={styles.filterChevron} viewBox="0 0 13.3333 13.3333" fill="none" aria-hidden="true">
-      <path
-        d="M9.8313 5.08433L6.66666 8.24904L3.50195 5.08433"
-        stroke="currentColor"
-        strokeWidth="0.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
+const STORY_TYPE_OPTIONS = ['단편', '이어지는 이야기']
 
 function LibraryStoriesPage() {
   const navigate = useNavigate()
   const [stories, setStories] = useState(INITIAL_STORIES)
   const [deleteTarget, setDeleteTarget] = useState<StoryRowData | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [storyTypeFilter, setStoryTypeFilter] = useState('')
+  const [sortOrder, setSortOrder] = useState<'recent' | 'oldest'>('recent')
+
+  const visibleStories = useMemo(() => {
+    const filtered = stories.filter((story) => {
+      if (searchQuery.trim() && !story.title.includes(searchQuery.trim())) {
+        return false
+      }
+      if (storyTypeFilter && story.storyType !== storyTypeFilter) {
+        return false
+      }
+      return true
+    })
+    return sortOrder === 'oldest' ? [...filtered].reverse() : filtered
+  }, [stories, searchQuery, storyTypeFilter, sortOrder])
 
   return (
     <div className={styles.page}>
@@ -118,20 +123,37 @@ function LibraryStoriesPage() {
 
       <div className={styles.toolbar}>
         <div className={styles.searchInput}>
-          <input type="text" placeholder="스토리 제목을 검색해 주세요." />
+          <input
+            type="text"
+            placeholder="스토리 제목을 검색해 주세요."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
         </div>
-        <button type="button" className={styles.filter}>
-          스토리 유형 · 전체
-          <ChevronIcon />
-        </button>
-        <button type="button" className={[styles.filter, styles.sort].join(' ')}>
-          최근 수정순
-          <ChevronIcon />
-        </button>
+        <FilterDropdown
+          value={storyTypeFilter}
+          placeholder="스토리 유형 · 전체"
+          options={STORY_TYPE_OPTIONS.map((type) => ({ label: type, value: type }))}
+          onChange={setStoryTypeFilter}
+          triggerClassName={styles.filter}
+        />
+        <FilterDropdown
+          value={sortOrder}
+          placeholder="최근 수정순"
+          includeAllOption={false}
+          options={[
+            { label: '최근 수정순', value: 'recent' },
+            { label: '오래된 순', value: 'oldest' },
+          ]}
+          onChange={(next) => setSortOrder(next as 'recent' | 'oldest')}
+          triggerClassName={[styles.filter, styles.sort].join(' ')}
+        />
       </div>
 
+      {visibleStories.length === 0 && <p className={styles.emptyState}>검색 결과가 없어요.</p>}
+
       <div className={styles.list}>
-        {stories.map((story) => (
+        {visibleStories.map((story) => (
           <LibraryListRow
             key={story.id}
             title={story.title}

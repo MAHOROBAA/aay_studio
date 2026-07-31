@@ -1,0 +1,59 @@
+@use '../../../styles/tokens' as *;
+
+.wrapper {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.triggerChevron {
+  flex-shrink: 0;
+  width: 13.333px;
+  height: 13.333px;
+  color: inherit;
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  background: $color-white;
+  border-radius: $radius-base;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 20;
+}
+
+.item {
+  height: 32px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  border: none;
+  background: $color-white;
+  font-family: $font-family-base;
+  font-size: 13px;
+  color: $color-text;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background: #f8f8f8;
+  }
+
+  &[aria-selected='true'] {
+    font-weight: 500;
+  }
+}
