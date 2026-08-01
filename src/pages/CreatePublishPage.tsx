@@ -5,7 +5,7 @@ import Stepper from '../components/common/Stepper/Stepper'
 import Dropdown from '../components/common/Dropdown/Dropdown'
 import InfoCard from '../components/common/InfoCard/InfoCard'
 import VideoPreview from '../components/common/VideoPreview/VideoPreview'
-import { AlertPopup } from '../components/common/Popup'
+import PublishCompletePopup from '../components/common/PublishCompletePopup/PublishCompletePopup'
 import { useCreateFlow } from '../router/createFlow'
 import { trackPublishCompleted } from '../lib/analytics'
 import styles from './CreatePublishPage.module.scss'
@@ -22,6 +22,9 @@ const PLATFORM_INFO_ITEMS = [
   { label: '게시 플랫폼', value: 'YouTube' },
   { label: '계정', value: 'io******o@gmail.com' },
 ]
+
+const PUBLISHED_TITLE = '샘플로 입력한 제목입니다.'
+const PUBLISHED_CHANNEL_NAME = '마호의유튜브'
 
 function CreatePublishPage() {
   const navigate = useNavigate()
@@ -40,11 +43,11 @@ function CreatePublishPage() {
 
   return (
     <div className={styles.page}>
-      <AlertPopup
+      <PublishCompletePopup
         isOpen={isPublishedAlertOpen}
-        title="게시가 완료됐어요"
-        description={`${PLATFORM_INFO_ITEMS[0].value} · ${PLATFORM_INFO_ITEMS[1].value}`}
-        onConfirm={() => navigate('/')}
+        title={PUBLISHED_TITLE}
+        channelName={PUBLISHED_CHANNEL_NAME}
+        onGoHome={() => navigate('/')}
       />
       <h1 className={styles.heading}>게시 설정</h1>
 
