@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import ChevronDownIcon from '../components/common/ChevronDownIcon/ChevronDownIcon'
 import { AlertPopup } from '../components/common/Popup'
+import { trackWorldCreated } from '../lib/analytics'
 import styles from './LibraryWorldFormPage.module.scss'
 
 const EXISTING_CHARACTERS = ['김햄찌', '진주씨', '팀장님', '모카', '콩이', '리오']
@@ -56,6 +57,9 @@ function LibraryWorldFormPage() {
   function handleSubmit() {
     if (!name.trim() || !description.trim()) {
       return
+    }
+    if (!isEditMode) {
+      trackWorldCreated()
     }
     setDoneAlertOpen(true)
   }

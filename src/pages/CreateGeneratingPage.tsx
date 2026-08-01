@@ -1,18 +1,39 @@
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Stepper from '../components/common/Stepper/Stepper'
-import { useCreateFlow } from '../router/createFlow'
+import { useCreateGenerationMeta } from '../router/createFlow'
+import { CURRENT_CREDIT_BALANCE } from '../mocks/credit'
+import { trackCreditSpent, trackVideoCreationCompleted } from '../lib/analytics'
 import styles from './CreateGeneratingPage.module.scss'
 
-const STATUS_ITEMS = [
-  { label: '장면 이미지 생성', done: true },
-  { label: '영상 변환', done: true },
-  { label: '오디오 적용', done: true },
-  { label: '최종 영상 합성', done: false },
-]
+const REQUIRED_CREDIT = 24
+
+const STATUS_LABELS = ['장면 이미지 생성', '영상 변환', '오디오 적용', '최종 영상 합성']
 
 function CreateGeneratingPage() {
-  const flow = useCreateFlow()
-  const progressPercent = 12
+  const navigate = useNavigate()
+  const { flow, duration, ratio, retryCount } = useCreateGenerationMeta()
+  const [isComplete, setComplete] = useState(false)
+  const progressPercent = isComplete ? 100 : 12
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setComplete(true)
+      trackVideoCreationCompleted({
+        creationMethod: flow,
+        duration,
+        creditAmount: REQUIRED_CREDIT,
+        retryCount,
+      })
+      trackCreditSpent({
+        actionType: 'video_creation',
+        creditAmount: REQUIRED_CREDIT,
+        balanceAfter: CURRENT_CREDIT_BALANCE - REQUIRED_CREDIT,
+      })
+    }, 3000)
+    return () => window.clearTimeout(timer)
+  }, [flow, duration, retryCount])
 
   return (
     <div className={styles.page}>
@@ -31,9 +52,9 @@ function CreateGeneratingPage() {
       <div className={styles.status}>
         <p className={styles.statusTitle}>현재 작업 상태</p>
         <div className={styles.statusList}>
-          {STATUS_ITEMS.map((item) => (
-            <div key={item.label} className={styles.statusItem}>
-              {item.done ? (
+          {STATUS_LABELS.map((label) => (
+            <div key={label} className={styles.statusItem}>
+              {isComplete ? (
                 <svg className={styles.statusIcon} viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.2" />
                   <path
@@ -61,7 +82,7 @@ function CreateGeneratingPage() {
                   />
                 </svg>
               )}
-              <p>{item.label}</p>
+              <p>{label}</p>
             </div>
           ))}
         </div>
@@ -69,13 +90,17 @@ function CreateGeneratingPage() {
 
       <div className={styles.estimate}>
         <p className={styles.estimateLabel}>예상 남은 시간</p>
-        <p className={styles.estimateValue}>2분 35초</p>
+        <p className={styles.estimateValue}>{isComplete ? '0초' : '2분 35초'}</p>
       </div>
 
       <p className={styles.hint}>다른 화면으로 이동해도 생성은 계속됩니다.</p>
 
       <div className={styles.actions}>
-        <Button type="button" disabled>
+        <Button
+          type="button"
+          disabled={!isComplete}
+          onClick={() => navigate('/create/review', { state: { flow, duration, ratio, retryCount } })}
+        >
           다음 →
         </Button>
       </div>

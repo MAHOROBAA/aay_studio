@@ -5,8 +5,9 @@ import Stepper from '../components/common/Stepper/Stepper'
 import InfoCard from '../components/common/InfoCard/InfoCard'
 import VideoPreview from '../components/common/VideoPreview/VideoPreview'
 import InsufficientCreditPopup from '../components/common/InsufficientCreditPopup/InsufficientCreditPopup'
-import { useCreateFlow } from '../router/createFlow'
+import { useCreateGenerationMeta } from '../router/createFlow'
 import { CURRENT_CREDIT_BALANCE } from '../mocks/credit'
+import { trackCreditInsufficient, trackGenerationRetry, trackReviewCompleted } from '../lib/analytics'
 import styles from './CreateReviewPage.module.scss'
 
 const VIDEO_INFO_ITEMS = [
@@ -22,16 +23,27 @@ const REQUIRED_CREDIT = 24
 
 function CreateReviewPage() {
   const navigate = useNavigate()
-  const flow = useCreateFlow()
+  const { flow, duration, ratio, retryCount } = useCreateGenerationMeta()
   const briefPath = flow === 'free' ? '/create/free/brief' : '/create/settings'
   const [isInsufficientOpen, setInsufficientOpen] = useState(false)
 
   function handleRegenerate() {
     if (CURRENT_CREDIT_BALANCE < REQUIRED_CREDIT) {
+      trackCreditInsufficient({
+        actionType: 'video_creation',
+        requiredAmount: REQUIRED_CREDIT,
+        balance: CURRENT_CREDIT_BALANCE,
+      })
       setInsufficientOpen(true)
       return
     }
-    navigate('/create/generating', { state: { flow } })
+    trackGenerationRetry()
+    navigate('/create/generating', { state: { flow, duration, ratio, retryCount: retryCount + 1 } })
+  }
+
+  function handleReviewCompleted() {
+    trackReviewCompleted()
+    navigate('/create/publish', { state: { flow, duration, ratio, retryCount } })
   }
 
   return (
@@ -57,7 +69,7 @@ function CreateReviewPage() {
         <Button type="button" variant="primary" onClick={handleRegenerate}>
           다시 생성 · 24크레딧
         </Button>
-        <Button type="button" variant="primary" onClick={() => navigate('/create/publish', { state: { flow } })}>
+        <Button type="button" variant="primary" onClick={handleReviewCompleted}>
           게시 설정으로 이동 →
         </Button>
       </div>

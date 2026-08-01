@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import ChevronDownIcon from '../components/common/ChevronDownIcon/ChevronDownIcon'
 import { AlertPopup } from '../components/common/Popup'
+import { trackStoryCreated } from '../lib/analytics'
 import styles from './LibraryStoryFormPage.module.scss'
 
 const EXISTING_WORLDS = ['햄찌네 회사생활', '숲속 마을의 느긋한 하루', '고양이 탐정 사무소']
@@ -56,6 +57,9 @@ function LibraryStoryFormPage() {
   function handleSubmit() {
     if (!title.trim() || !summary.trim()) {
       return
+    }
+    if (!isEditMode) {
+      trackStoryCreated()
     }
     setDoneAlertOpen(true)
   }

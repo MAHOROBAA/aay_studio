@@ -5,6 +5,7 @@ import Stepper from '../components/common/Stepper/Stepper'
 import InfoCard from '../components/common/InfoCard/InfoCard'
 import InsufficientCreditPopup from '../components/common/InsufficientCreditPopup/InsufficientCreditPopup'
 import { CURRENT_CREDIT_BALANCE } from '../mocks/credit'
+import { trackCreditInsufficient, trackVideoCreationStarted } from '../lib/analytics'
 import styles from './CreateFreeBriefPage.module.scss'
 
 const REQUIRED_CREDIT = 24
@@ -51,10 +52,21 @@ function CreateFreeBriefPage() {
 
   function handleGenerate() {
     if (CURRENT_CREDIT_BALANCE < REQUIRED_CREDIT) {
+      trackCreditInsufficient({
+        actionType: 'video_creation',
+        requiredAmount: REQUIRED_CREDIT,
+        balance: CURRENT_CREDIT_BALANCE,
+      })
       setInsufficientOpen(true)
       return
     }
-    navigate('/create/generating', { state: { flow: 'free' } })
+    trackVideoCreationStarted({
+      creationMethod: 'free',
+      duration: OUTPUT_ITEMS[2].value,
+      ratio: OUTPUT_ITEMS[1].value,
+      estimatedCreditAmount: REQUIRED_CREDIT,
+    })
+    navigate('/create/generating', { state: { flow: 'free', duration: OUTPUT_ITEMS[2].value, ratio: OUTPUT_ITEMS[1].value } })
   }
 
   return (

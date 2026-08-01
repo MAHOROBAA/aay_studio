@@ -1,10 +1,13 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Stepper from '../components/common/Stepper/Stepper'
 import Dropdown from '../components/common/Dropdown/Dropdown'
 import InfoCard from '../components/common/InfoCard/InfoCard'
 import VideoPreview from '../components/common/VideoPreview/VideoPreview'
+import { AlertPopup } from '../components/common/Popup'
 import { useCreateFlow } from '../router/createFlow'
+import { trackPublishCompleted } from '../lib/analytics'
 import styles from './CreatePublishPage.module.scss'
 
 const VIDEO_INFO_ITEMS = [
@@ -23,9 +26,26 @@ const PLATFORM_INFO_ITEMS = [
 function CreatePublishPage() {
   const navigate = useNavigate()
   const flow = useCreateFlow()
+  const [isPublishing, setPublishing] = useState(false)
+  const [isPublishedAlertOpen, setPublishedAlertOpen] = useState(false)
+
+  function handlePublish() {
+    setPublishing(true)
+    window.setTimeout(() => {
+      setPublishing(false)
+      setPublishedAlertOpen(true)
+      trackPublishCompleted({ platform: 'youtube', publishType: 'immediate' })
+    }, 700)
+  }
 
   return (
     <div className={styles.page}>
+      <AlertPopup
+        isOpen={isPublishedAlertOpen}
+        title="게시가 완료됐어요"
+        description={`${PLATFORM_INFO_ITEMS[0].value} · ${PLATFORM_INFO_ITEMS[1].value}`}
+        onConfirm={() => navigate('/')}
+      />
       <h1 className={styles.heading}>게시 설정</h1>
 
       {flow === 'free' && <Stepper current={5} />}
@@ -70,8 +90,8 @@ function CreatePublishPage() {
         <Button type="button" variant="secondary" onClick={() => navigate('/create/review', { state: { flow } })}>
           ← 검토로 돌아가기
         </Button>
-        <Button type="button" variant="primary">
-          게시하기 →
+        <Button type="button" variant="primary" disabled={isPublishing} onClick={handlePublish}>
+          {isPublishing ? '게시 중...' : '게시하기 →'}
         </Button>
       </div>
     </div>

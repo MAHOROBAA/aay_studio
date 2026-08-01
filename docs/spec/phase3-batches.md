@@ -270,3 +270,61 @@
   이 컴포넌트를 그대로 재사용하면 된다. 장면 추가/삭제나 합계 검증처럼 값 하나 이상을 넘어서는 동적 리스트 편집이
   필요하면 `InfoCard`를 억지로 확장하지 말고 전용 컴포넌트로 새로 설계한다(`장면 구성` 카드가 그 대표 예시, 아직
   미구현 — 배치 F 확인 결과 참고).
+
+## 배치 이후 추가 작업: 결제 Mock 흐름 + GA4 연동 + 생성/게시 완료 파이프라인
+
+3단계 배치 A~F 완료 후, `spec-addendum-credit.md` 24장 "현재 프론트엔드 단계" 범위로 진행한 작업이다.
+
+### 결제 Mock 흐름 (완료)
+
+- `MyPageCreditChargePage`의 "결제하기"가 `src/mocks/credit.ts`의 `requestCreditPayment()`를 호출한다. PG 솔루션이
+  붙으면 이 함수 내부만 교체하면 되는 구조다. 지금은 0.7초 뒤 `MOCK_PAYMENT_RESULT`(기본 `'success'`)를 반환한다 —
+  실패 케이스를 보려면 이 값을 잠깐 `'failure'`로 바꿔서 테스트한다(크레딧 잔액 mock과 동일한 방식).
+- 결제 성공("크레딧 충전이 완료되었어요")/실패("크레딧 충전에 실패했어요") 모두 공통 `AlertPopup`을 재사용하고
+  내용(description)은 없다. 이를 위해 `AlertPopup`/`PopupShell`의 `description`을 옵셔널로 바꿨다.
+- 확인 버튼 동작은 진입 경로로 분기한다: `InsufficientCreditPopup`이 충전 페이지로 이동할 때
+  `navigate(..., { state: { returnTo: 현재경로 } })`로 원래 페이지를 함께 넘기고, 충전 페이지는 `returnTo`가 있으면
+  (생성 중 진입) 확인 시 그 페이지로 돌아가고 없으면(마이페이지에서 직접 진입) 팝업만 닫는다.
+
+### 생성/게시 완료 파이프라인 보강 (완료)
+
+GA4의 `video_creation_completed`/`publish_completed`가 addendum 21장 "주요 이벤트" 5개 중 2개인데, 실제로 붙일 완료
+시점 자체가 없었다 — `CreateGeneratingPage`가 진행률 12%·"다음" 버튼 `disabled` 고정이었고 `CreatePublishPage`의
+"게시하기" 버튼은 `onClick`이 아예 없었다(2단계 정적 화면 이후 3단계 배치들에서 빠졌던 부분). 이번에 함께 고쳤다.
+
+- `CreateGeneratingPage`: 진입 3초 뒤 mock으로 완료 처리(진행률 100%, 4개 작업 항목 전부 완료 아이콘, "다음" 버튼
+  활성화). 여러 단계로 나눠 애니메이션하지 않고 한 번에 완료로 전환하는, 이 프로젝트의 기존 mock 패턴(AI 추천
+  버튼의 0.7초 단일 전환)과 동일한 방식을 따랐다.
+- `CreatePublishPage`: "게시하기" 클릭 → 0.7초 "게시 중..." → 완료. 완료 팝업은 spec 6.4에 정의된 "브랜드 문구 +
+  게시 완료 메시지 + 플랫폼·제목·채널 정보 + 게시물 보기/홈으로 이동 2버튼" 전용 디자인(Figma 노드 `63:1833`)
+  대신, **Figma MCP 서버가 이번 작업 중 연결되지 않아** 공통 `AlertPopup`(단일 확인 버튼, 확인 시 홈으로 이동)으로
+  임시 대체했다. Figma가 다시 연결되면 `63:1833`을 확인해서 전용 팝업(2버튼, 플랫폼/제목/채널 정보 레이아웃)으로
+  교체해야 한다 — 지금 버전은 기능적 자리표시자다.
+  - "게시하기"의 제목/게시글 내용 입력칸은 여전히 정적 placeholder 문단이라(실제 `<textarea>`가 아님) 아무 값도
+    입력할 수 없다. 이번 작업 범위(GA4 이벤트를 위한 완료 지점 확보)에 포함하지 않았고, 완료 팝업에도 실제 입력
+    제목 대신 플랫폼·계정 정보만 넣었다.
+- `src/router/createFlow.ts`에 `useCreateGenerationMeta()`를 추가했다 — 기존 `useCreateFlow()`(flow만 읽음)에 더해
+  `duration`/`ratio`/`retryCount`를 라우터 state로 이어 받는다. 생성 시작(`CreateSettingsPage`/`CreateFreeBriefPage`)
+  → 생성 중 → 검토 → 게시까지 이 값들을 계속 실어 나른다.
+
+### GA4 연동 (완료, 측정 ID 대기 중)
+
+- 공통 모듈 `src/lib/analytics.ts`: `initAnalytics()`(gtag.js 로드, 개발 환경에서 `debug_mode: true`로 DebugView
+  노출), `setAnalyticsUserId()`(로그인/로그아웃 시 user_id 설정용 — 실제 로그인이 없어서 아직 호출하는 곳 없음),
+  `trackEvent()` + 이벤트별 타입 있는 헬퍼 함수들. `initAnalytics()`는 `main.tsx`에서 앱 시작 시 한 번 호출한다.
+- 측정 ID는 `VITE_GA4_MEASUREMENT_ID` 환경변수로 관리한다(`.env.example`에 변수명만 기록, 실값은 `.env.local`).
+  **사용자가 GA4 속성을 만들고 측정 ID를 알려주면 `.env.local`에 채워 넣어야 실제로 이벤트가 전송된다** — 그 전까지는
+  `trackEvent`가 조용히 no-op한다.
+- **이번에 연결한 이벤트**: `character_created`(`CharacterCreatePopup` 제출 시), `world_created`/`story_created`
+  (각 폼의 생성 모드 제출 시, 수정 모드는 제외), `video_creation_started`(생성 버튼 클릭 시, `CreateSettingsPage`/
+  `CreateFreeBriefPage`), `video_creation_completed`+`credit_spent`(생성 완료 시, `CreateGeneratingPage`),
+  `generation_retry`(검토 화면 "다시 생성"), `review_completed`(검토 완료 → 게시 설정 이동),
+  `publish_completed`(게시 완료), `credit_insufficient`(크레딧 부족 팝업 노출 시점 3곳),
+  `view_item_list`/`select_item`/`begin_checkout`/`purchase`/`payment_failed`(크레딧 충전 페이지).
+- **의도적으로 제외한 이벤트**: `sign_up`/`login`/`youtube_connected`는 실제 Google 인증이 없어서(4단계 범위) 제외
+  했다 — 가짜 완료를 진짜처럼 보내지 않기 위함. `free_credit_granted`/`weekly_credit_claimed`/`credit_refunded`/
+  `credit_expired`/`refund`/`publish_failed`/`video_creation_failed`/`onboarding_started`도 그 상태를 만들어낼 실제
+  mock 트리거가 없어서(무료 크레딧 지급, 주간 지원 수령, 생성/게시 실패 흐름 전부 미구현) 제외했다. 필요해지면
+  해당 mock 흐름을 먼저 만들고 붙여야 한다.
+- `.env.local`이 없어도(=측정 ID가 없으면) `initAnalytics()`가 아무 것도 하지 않고 조용히 끝나므로, 지금 상태로
+  빌드/실행해도 에러는 없다.

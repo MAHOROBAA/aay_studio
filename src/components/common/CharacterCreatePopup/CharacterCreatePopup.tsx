@@ -1,5 +1,6 @@
 import { useRef, useState, type ChangeEvent } from 'react'
 import Button from '../Button/Button'
+import { trackCharacterCreated } from '../../../lib/analytics'
 import styles from './CharacterCreatePopup.module.scss'
 
 type CreateMode = 'description' | 'image'
@@ -76,6 +77,7 @@ function CharacterCreatePopup({ isOpen, onClose, onCreate }: CharacterCreatePopu
       summary: description.trim(),
       imageInfo: refImages.length > 0 ? `참고 이미지 ${refImages.length}장` : '대표 이미지 1장',
     })
+    trackCharacterCreated()
     resetForm()
   }
 

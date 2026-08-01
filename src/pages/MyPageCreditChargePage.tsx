@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import { AlertPopup } from '../components/common/Popup'
 import { requestCreditPayment, type PaymentResult } from '../mocks/credit'
+import { trackBeginCheckout, trackPaymentFailed, trackPurchase, trackSelectItem, trackViewItemList } from '../lib/analytics'
 import styles from './MyPageCreditChargePage.module.scss'
 
 type CreditProduct = {
@@ -10,18 +11,24 @@ type CreditProduct = {
   label: string
   subLabel: string
   price: string
+  priceValue: number
+  paidCredit: number
+  bonusCredit: number
   originalPrice?: string
   bonusPercent?: string
 }
 
 const PRODUCTS: CreditProduct[] = [
-  { id: 'p1', label: '500 크레딧', subLabel: '500', price: '5,000원' },
-  { id: 'p2', label: '1,000 크레딧', subLabel: '1,000', price: '10,000원' },
+  { id: 'p1', label: '500 크레딧', subLabel: '500', price: '5,000원', priceValue: 5000, paidCredit: 500, bonusCredit: 0 },
+  { id: 'p2', label: '1,000 크레딧', subLabel: '1,000', price: '10,000원', priceValue: 10000, paidCredit: 1000, bonusCredit: 0 },
   {
     id: 'p3',
     label: '3,150 크레딧',
     subLabel: '3,000 + 150 보너스',
     price: '30,000원',
+    priceValue: 30000,
+    paidCredit: 3000,
+    bonusCredit: 150,
     originalPrice: '31,500원',
     bonusPercent: '+5%',
   },
@@ -30,6 +37,9 @@ const PRODUCTS: CreditProduct[] = [
     label: '5,500 크레딧',
     subLabel: '5,000 + 500 보너스',
     price: '50,000원',
+    priceValue: 50000,
+    paidCredit: 5000,
+    bonusCredit: 500,
     originalPrice: '55,000원',
     bonusPercent: '+10%',
   },
@@ -38,10 +48,17 @@ const PRODUCTS: CreditProduct[] = [
     label: '11,500 크레딧',
     subLabel: '10,000 + 1,500 보너스',
     price: '100,000원',
+    priceValue: 100000,
+    paidCredit: 10000,
+    bonusCredit: 1500,
     originalPrice: '115,000원',
     bonusPercent: '+15%',
   },
 ]
+
+function toGaItem(product: CreditProduct) {
+  return { item_id: product.id, item_name: product.label, price: product.priceValue }
+}
 
 function MyPageCreditChargePage() {
   const navigate = useNavigate()
@@ -53,11 +70,35 @@ function MyPageCreditChargePage() {
 
   const selected = PRODUCTS.find((product) => product.id === selectedId) ?? PRODUCTS[2]
 
+  useEffect(() => {
+    trackViewItemList(PRODUCTS.map(toGaItem))
+  }, [])
+
+  function handleSelectProduct(productId: string) {
+    setSelectedId(productId)
+    const product = PRODUCTS.find((item) => item.id === productId)
+    if (product) {
+      trackSelectItem(toGaItem(product))
+    }
+  }
+
   function handlePay() {
+    trackBeginCheckout(toGaItem(selected))
     setPaying(true)
     requestCreditPayment().then((result) => {
       setPaying(false)
       setPaymentResult(result)
+      if (result === 'success') {
+        trackPurchase({
+          transactionId: `pay_${Date.now()}`,
+          value: selected.priceValue,
+          item: toGaItem(selected),
+          paidCreditAmount: selected.paidCredit,
+          bonusCreditAmount: selected.bonusCredit,
+        })
+      } else {
+        trackPaymentFailed()
+      }
     })
   }
 
@@ -103,7 +144,7 @@ function MyPageCreditChargePage() {
               key={product.id}
               type="button"
               className={[styles.product, product.id === selectedId ? styles.productSelected : ''].join(' ')}
-              onClick={() => setSelectedId(product.id)}
+              onClick={() => handleSelectProduct(product.id)}
             >
               <div className={styles.productAmount}>
                 <p className={styles.productLabel}>{product.label}</p>
