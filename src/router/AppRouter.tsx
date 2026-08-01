@@ -27,7 +27,7 @@ import MyPageCreditChargePage from '../pages/MyPageCreditChargePage'
 
 function AppRouter() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route element={<AppLayout />}>
