@@ -5,7 +5,7 @@ import styles from './Popup.module.scss'
 type AlertPopupProps = {
   isOpen: boolean
   title: string
-  description: string
+  description?: string
   confirmLabel?: string
   onConfirm: () => void
 }

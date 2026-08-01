@@ -3,7 +3,7 @@ import styles from './Popup.module.scss'
 
 type PopupShellProps = {
   title: string
-  description: string
+  description?: string
   children: ReactNode
 }
 
@@ -25,7 +25,7 @@ function PopupShell({ title, description, children }: PopupShellProps) {
         <h2 id={titleId} className={styles.title}>
           {title}
         </h2>
-        <p className={styles.description}>{description}</p>
+        {description && <p className={styles.description}>{description}</p>}
         <div className={styles.actions}>{children}</div>
       </div>
     </div>

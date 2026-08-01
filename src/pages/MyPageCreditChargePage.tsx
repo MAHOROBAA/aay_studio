@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
+import { AlertPopup } from '../components/common/Popup'
+import { requestCreditPayment, type PaymentResult } from '../mocks/credit'
 import styles from './MyPageCreditChargePage.module.scss'
 
 type CreditProduct = {
@@ -43,9 +45,28 @@ const PRODUCTS: CreditProduct[] = [
 
 function MyPageCreditChargePage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const [selectedId, setSelectedId] = useState('p3')
+  const [isPaying, setPaying] = useState(false)
+  const [paymentResult, setPaymentResult] = useState<PaymentResult | null>(null)
 
   const selected = PRODUCTS.find((product) => product.id === selectedId) ?? PRODUCTS[2]
+
+  function handlePay() {
+    setPaying(true)
+    requestCreditPayment().then((result) => {
+      setPaying(false)
+      setPaymentResult(result)
+    })
+  }
+
+  function handleAlertConfirm() {
+    setPaymentResult(null)
+    if (returnTo) {
+      navigate(returnTo)
+    }
+  }
 
   return (
     <div className={styles.page}>
@@ -106,8 +127,8 @@ function MyPageCreditChargePage() {
             <p className={styles.selectedPayment}>결제 금액 {selected.price}</p>
           </div>
           <div className={styles.payButtonWrap}>
-            <Button type="button" variant="primary">
-              결제하기
+            <Button type="button" variant="primary" disabled={isPaying} onClick={handlePay}>
+              {isPaying ? '결제 중...' : '결제하기'}
             </Button>
           </div>
           <div className={styles.notice}>
@@ -122,6 +143,17 @@ function MyPageCreditChargePage() {
           </div>
         </div>
       </div>
+
+      <AlertPopup
+        isOpen={paymentResult === 'success'}
+        title="크레딧 충전이 완료되었어요"
+        onConfirm={handleAlertConfirm}
+      />
+      <AlertPopup
+        isOpen={paymentResult === 'failure'}
+        title="크레딧 충전에 실패했어요"
+        onConfirm={handleAlertConfirm}
+      />
     </div>
   )
 }
