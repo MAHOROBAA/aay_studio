@@ -156,7 +156,7 @@ function LibraryWorldsPage() {
             metadataItems={[`캐릭터 ${world.characterCount}명`, `영상 ${world.videoCount}개`, world.updatedAt]}
             onClick={() => navigate(`/library/worlds/${world.id}`)}
             menuItems={[
-              { key: 'edit', label: '수정', icon: <EditIcon />, onSelect: () => {} },
+              { key: 'edit', label: '수정', icon: <EditIcon />, onSelect: () => navigate(`/library/worlds/${world.id}/edit`) },
               { key: 'delete', label: '삭제', icon: <TrashIcon />, danger: true, onSelect: () => setDeleteTarget(world) },
             ]}
           />

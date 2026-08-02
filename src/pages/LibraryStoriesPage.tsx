@@ -162,7 +162,7 @@ function LibraryStoriesPage() {
             metadataItems={[story.worldName, `캐릭터 ${story.characterCount}명 · 영상 ${story.videoCount}개`, story.updatedAt]}
             onClick={() => navigate(`/library/stories/${story.id}`)}
             menuItems={[
-              { key: 'edit', label: '수정', icon: <EditIcon />, onSelect: () => {} },
+              { key: 'edit', label: '수정', icon: <EditIcon />, onSelect: () => navigate(`/library/stories/${story.id}/edit`) },
               { key: 'delete', label: '삭제', icon: <TrashIcon />, danger: true, onSelect: () => setDeleteTarget(story) },
             ]}
           />

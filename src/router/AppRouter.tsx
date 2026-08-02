@@ -13,6 +13,7 @@ import CreateReviewPage from '../pages/CreateReviewPage'
 import CreatePublishPage from '../pages/CreatePublishPage'
 import LibraryVideosPage from '../pages/LibraryVideosPage'
 import LibraryVideoDetailPage from '../pages/LibraryVideoDetailPage'
+import LibraryVideoPublishSettingsPage from '../pages/LibraryVideoPublishSettingsPage'
 import LibraryCharactersPage from '../pages/LibraryCharactersPage'
 import LibraryCharacterDetailPage from '../pages/LibraryCharacterDetailPage'
 import LibraryWorldsPage from '../pages/LibraryWorldsPage'
@@ -44,6 +45,7 @@ function AppRouter() {
           <Route path="/library" element={<Navigate to="/library/videos" replace />} />
           <Route path="/library/videos" element={<LibraryVideosPage />} />
           <Route path="/library/videos/:videoId" element={<LibraryVideoDetailPage />} />
+          <Route path="/library/videos/:videoId/publish-settings" element={<LibraryVideoPublishSettingsPage />} />
           <Route path="/library/characters" element={<LibraryCharactersPage />} />
           <Route path="/library/characters/:characterId" element={<LibraryCharacterDetailPage />} />
           <Route path="/library/worlds" element={<LibraryWorldsPage />} />

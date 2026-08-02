@@ -132,9 +132,26 @@ function LibraryVideosPage() {
     const items: CardMenuItem[] = [{ key: 'download', label: '다운로드', icon: <DownloadIcon />, onSelect: () => {} }]
 
     if (video.status === '예약 게시') {
-      items.push({ key: 'reschedule', label: '예약 변경', icon: <ClockIcon />, onSelect: () => {} })
+      items.push({
+        key: 'reschedule',
+        label: '예약 변경',
+        icon: <ClockIcon />,
+        onSelect: () => navigate(`/library/videos/${video.id}/publish-settings`, { state: { status: video.status } }),
+      })
+    } else if (video.status === '게시 실패') {
+      items.push({
+        key: 'publish-settings',
+        label: '게시 상태 변경',
+        icon: <PublishSettingsIcon />,
+        onSelect: () => navigate(`/library/videos/${video.id}/publish-settings`, { state: { status: video.status } }),
+      })
     } else {
-      items.push({ key: 'publish-settings', label: '게시 설정 변경', icon: <PublishSettingsIcon />, onSelect: () => {} })
+      items.push({
+        key: 'visibility-settings',
+        label: '공개 설정 변경',
+        icon: <PublishSettingsIcon />,
+        onSelect: () => navigate(`/library/videos/${video.id}/publish-settings`, { state: { status: video.status } }),
+      })
     }
 
     items.push({ key: 'delete', label: '삭제', icon: <TrashIcon />, danger: true, onSelect: () => setDeleteTarget(video) })
