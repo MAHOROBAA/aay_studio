@@ -66,7 +66,11 @@ function InfoCard({ title, items, editable = false, onEdit }: InfoCardProps) {
         </div>
       </div>
       {editable && (
-        <button type="button" className={styles.editButton} onClick={handleEditButtonClick}>
+        <button
+          type="button"
+          className={[styles.editButton, isEditing ? styles.editButtonActive : ''].join(' ')}
+          onClick={handleEditButtonClick}
+        >
           {isEditing ? '저장' : '수정'}
         </button>
       )}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Stepper from '../components/common/Stepper/Stepper'
 import InfoCard from '../components/common/InfoCard/InfoCard'
+import ScenePlanCard from '../components/common/ScenePlanCard/ScenePlanCard'
 import InsufficientCreditPopup from '../components/common/InsufficientCreditPopup/InsufficientCreditPopup'
 import { CURRENT_CREDIT_BALANCE } from '../mocks/credit'
 import { trackCreditInsufficient, trackVideoCreationStarted } from '../lib/analytics'
@@ -18,10 +19,10 @@ const DIRECTION_ITEMS = [
   { label: '움직임', value: '느리고 섬세하게' },
 ]
 
-const SCENE_ITEMS = [
-  { label: '0~5초', value: '창문에 맺힌 빗방울' },
-  { label: '5~15초', value: '따뜻한 카페 내부' },
-  { label: '15~20초', value: '흐릿한 도시의 불빛' },
+const SCENES = [
+  { id: 'scene-1', durationSec: 5, description: '창문에 맺힌 빗방울' },
+  { id: 'scene-2', durationSec: 10, description: '따뜻한 카페 내부' },
+  { id: 'scene-3', durationSec: 5, description: '흐릿한 도시의 불빛' },
 ]
 
 const AUDIO_ITEMS = [
@@ -93,7 +94,7 @@ function CreateFreeBriefPage() {
             </div>
 
             <InfoCard title="연출 방향" items={DIRECTION_ITEMS} editable />
-            <InfoCard title="장면 구성" items={SCENE_ITEMS} editable />
+            <ScenePlanCard title="장면 구성" totalDurationLimit={20} initialScenes={SCENES} />
             <InfoCard title="오디오 구성" items={AUDIO_ITEMS} editable />
           </div>
 

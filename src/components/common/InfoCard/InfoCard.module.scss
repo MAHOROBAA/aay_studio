@@ -124,3 +124,14 @@
   text-align: center;
   cursor: pointer;
 }
+
+.editButtonActive {
+  border: none;
+  background: $color-text-muted;
+  color: $color-white;
+
+  &:disabled {
+    background: $color-disabled-bg;
+    cursor: not-allowed;
+  }
+}

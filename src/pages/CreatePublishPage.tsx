@@ -31,6 +31,8 @@ function CreatePublishPage() {
   const flow = useCreateFlow()
   const [isPublishing, setPublishing] = useState(false)
   const [isPublishedAlertOpen, setPublishedAlertOpen] = useState(false)
+  const [postTitle, setPostTitle] = useState('')
+  const [postContent, setPostContent] = useState('')
 
   function handlePublish() {
     setPublishing(true)
@@ -45,7 +47,7 @@ function CreatePublishPage() {
     <div className={styles.page}>
       <PublishCompletePopup
         isOpen={isPublishedAlertOpen}
-        title={PUBLISHED_TITLE}
+        title={postTitle.trim() || PUBLISHED_TITLE}
         channelName={PUBLISHED_CHANNEL_NAME}
         onGoHome={() => navigate('/')}
       />
@@ -63,14 +65,24 @@ function CreatePublishPage() {
         <div className={styles.row}>
           <p className={styles.rowLabel}>제목</p>
           <div className={styles.textareaBox} style={{ height: 38 }}>
-            <p className={styles.textareaPlaceholder}>콘텐츠 제목을 작성해 주세요.</p>
+            <input
+              className={styles.textareaField}
+              value={postTitle}
+              onChange={(event) => setPostTitle(event.target.value)}
+              placeholder="콘텐츠 제목을 작성해 주세요."
+            />
           </div>
         </div>
 
         <div className={[styles.row, styles.rowStart].join(' ')}>
           <p className={[styles.rowLabel, styles.rowLabelStart].join(' ')}>게시글 내용</p>
           <div className={styles.textareaBox}>
-            <p className={styles.textareaPlaceholder}>게시글 내용을 작성해 주세요.</p>
+            <textarea
+              className={styles.textareaField}
+              value={postContent}
+              onChange={(event) => setPostContent(event.target.value)}
+              placeholder="게시글 내용을 작성해 주세요."
+            />
           </div>
         </div>
 
