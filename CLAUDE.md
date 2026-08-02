@@ -18,6 +18,13 @@
 **"2단계 배치 진행해줘" 같은 요청을 받으면 먼저 [`docs/spec/phase2-batches.md`](docs/spec/phase2-batches.md)를 읽고
 어떤 배치가 완료됐고 다음에 뭘 해야 하는지 확인한다.** 이 문서에 없는 새로운 진행 방식을 임의로 정하지 않는다.
 
+**[`docs/spec/spec-addendum-backend.md`](docs/spec/spec-addendum-backend.md)는 4단계(외부 연동 설계) 작업의
+기준 명세다 — 백엔드 언어/프레임워크(NestJS), 호스팅(Cloud Run), DB(Supabase PostgreSQL), 인증(Supabase Auth
++ Google 로그인, 폐쇄형 베타 허용 목록), AI 공급자(Google Gemini), 파일 스토리지(Cloudflare R2), 비동기
+작업(Cloud Tasks/Scheduler), YouTube 예약 게시, 테스터 관리 CLI, PG 보류 정책까지 전부 이미 확정돼 있다.
+백엔드/인프라/AI 연동을 조금이라도 건드리는 작업이면 반드시 먼저 이 문서를 확인하고, 다른 백엔드 관련 명세와
+충돌하면 이 문서를 우선한다. 이 문서 29장 "권장 개발 순서"(Step 1~8)를 따르고, 한 번에 전체를 구현하지 않는다.
+
 ## 0. 문서 우선순위
 
 - 화면 레이아웃, 색상, 폰트, 여백 등 시각적 수치는 **Figma를 우선**한다.
