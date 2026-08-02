@@ -435,3 +435,9 @@ GA4의 `video_creation_completed`/`publish_completed`가 addendum 21장 "주요 
 그대로 두고(`initAnalytics()`/이벤트 연결 전부 정상 구현 상태), 나중에 다른 구글 계정으로 교차 검증하거나
 구글 애널리틱스 고객센터에 문의할 상황이 되면 그때 다시 확인한다. `VITE_GA4_MEASUREMENT_ID`는 현재
 `G-T88X6Q6DWC`(새로 만든 속성)로 맞춰져 있다.
+
+**추가 참고(호스팅 이전)**: 이 검증 당시 배포 주소는 GitHub Pages(`mahorobaa.github.io/aay_studio`)였다.
+이후 `spec-addendum-backend.md`가 프론트 호스팅을 Vercel로 확정하면서 GitHub Pages 배포(워크플로,
+`vite.config.ts`의 `base: '/aay_studio/'`)를 제거하고 Vercel로 옮겼다 — GA4 관련 증상은 호스팅과 무관한
+것으로 이미 결론 내렸으므로(다른 브라우저/기기/속성에서도 동일 재현), 이 이전 자체가 GA4 문제 해결과는
+별개다.
