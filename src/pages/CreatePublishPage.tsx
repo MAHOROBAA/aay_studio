@@ -49,7 +49,7 @@ function CreatePublishPage() {
         isOpen={isPublishedAlertOpen}
         title={postTitle.trim() || PUBLISHED_TITLE}
         channelName={PUBLISHED_CHANNEL_NAME}
-        onGoHome={() => navigate('/')}
+        onGoHome={() => navigate('/home')}
       />
       <h1 className={styles.heading}>게시 설정</h1>
 
