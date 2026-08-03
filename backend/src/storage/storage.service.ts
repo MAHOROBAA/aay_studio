@@ -93,4 +93,39 @@ export class StorageService {
     })
     return { downloadUrl, expiresInSeconds: DOWNLOAD_URL_EXPIRES_IN_SECONDS }
   }
+
+  // AI 생성 결과처럼 서버가 직접 만든 바이트를 R2에 저장할 때 사용한다(클라이언트 업로드는 createUploadUrl).
+  async uploadObject(
+    userId: string,
+    relativePath: string,
+    data: Buffer,
+    contentType: string,
+  ): Promise<{ objectKey: string }> {
+    const objectKey = this.buildObjectKey(userId, relativePath)
+    await this.client.send(
+      new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: objectKey,
+        Body: data,
+        ContentType: contentType,
+      }),
+    )
+    return { objectKey }
+  }
+
+  // 캐릭터 참고 이미지처럼 서버가 직접 내용을 읽어와 AI 요청에 참조로 전달할 때 사용한다.
+  async getObjectBytes(
+    userId: string,
+    objectKey: string,
+  ): Promise<{ data: Buffer; contentType?: string }> {
+    this.assertOwnedByUser(userId, objectKey)
+    const response = await this.client.send(
+      new GetObjectCommand({ Bucket: this.bucketName, Key: objectKey }),
+    )
+    const bytes = await response.Body?.transformToByteArray()
+    if (!bytes) {
+      throw new BadRequestException('파일을 읽을 수 없어요.')
+    }
+    return { data: Buffer.from(bytes), contentType: response.ContentType }
+  }
 }

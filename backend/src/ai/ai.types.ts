@@ -45,7 +45,35 @@ export type TextGenerationProvider = {
   ): Promise<TextGenerationOutcome<StoryResult>>
 }
 
-export type AiFeatureType = 'WORLD_RECOMMEND' | 'STORY_RECOMMEND'
+export type CharacterImageInput = {
+  prompt: string
+  referenceImageKey?: string
+}
+
+export type SceneImageInput = {
+  prompt: string
+  referenceImageKeys?: string[]
+}
+
+export type ImageGenerationOutcome = {
+  base64Data: string
+  mimeType: string
+  inputImageCount: number
+  outputImageCount: number
+}
+
+export type ImageGenerationProvider = {
+  generateCharacter(input: CharacterImageInput): Promise<ImageGenerationOutcome>
+  generateScene(input: SceneImageInput): Promise<ImageGenerationOutcome>
+}
+
+export type GeneratedImageResult = {
+  objectKey: string
+  downloadUrl: string
+}
+
+export type AiFeatureType =
+  'WORLD_RECOMMEND' | 'STORY_RECOMMEND' | 'CHARACTER_IMAGE' | 'SCENE_IMAGE'
 
 export type AiUsageLogEntry = {
   userId: string
@@ -55,6 +83,8 @@ export type AiUsageLogEntry = {
   model: string
   inputTokens?: number
   outputTokens?: number
+  inputImageCount?: number
+  outputImageCount?: number
   providerCostUsd?: number
   exchangeRate?: number
   providerCostKrw?: number
