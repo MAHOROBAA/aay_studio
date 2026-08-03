@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '../auth/auth.guard'
 import { CurrentUser } from '../auth/current-user.decorator'
 import type { RequestUser } from '../auth/auth.types'
@@ -6,7 +6,10 @@ import { AiService } from './ai.service'
 import type {
   CharacterImageInput,
   GeneratedImageResult,
+  GenerationJobStatus,
+  GenerationJobSummary,
   SceneImageInput,
+  SceneVideoInput,
   StoryGenerationInput,
   StoryResult,
   WorldGenerationInput,
@@ -48,5 +51,21 @@ export class AiController {
     @Body() body: SceneImageInput,
   ): Promise<GeneratedImageResult> {
     return this.aiService.generateSceneImage(user.id, body)
+  }
+
+  @Post('videos/generate')
+  requestSceneVideo(
+    @CurrentUser() user: RequestUser,
+    @Body() body: SceneVideoInput,
+  ): Promise<{ jobId: string; status: GenerationJobStatus }> {
+    return this.aiService.requestSceneVideo(user.id, body)
+  }
+
+  @Get('videos/jobs/:jobId')
+  getSceneVideoJob(
+    @CurrentUser() user: RequestUser,
+    @Param('jobId') jobId: string,
+  ): Promise<GenerationJobSummary> {
+    return this.aiService.getSceneVideoJob(user.id, jobId)
   }
 }

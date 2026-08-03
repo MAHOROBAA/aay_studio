@@ -72,8 +72,27 @@ export type GeneratedImageResult = {
   downloadUrl: string
 }
 
+export type SceneVideoInput = {
+  prompt: string
+  referenceImageKey?: string
+}
+
+export type GenerationJobStatus =
+  'PENDING' | 'PROCESSING' | 'SUCCEEDED' | 'FAILED'
+
+export type GenerationJobSummary = {
+  jobId: string
+  status: GenerationJobStatus
+  errorMessage?: string
+  downloadUrl?: string
+}
+
 export type AiFeatureType =
-  'WORLD_RECOMMEND' | 'STORY_RECOMMEND' | 'CHARACTER_IMAGE' | 'SCENE_IMAGE'
+  | 'WORLD_RECOMMEND'
+  | 'STORY_RECOMMEND'
+  | 'CHARACTER_IMAGE'
+  | 'SCENE_IMAGE'
+  | 'SCENE_VIDEO'
 
 export type AiUsageLogEntry = {
   userId: string
@@ -85,6 +104,8 @@ export type AiUsageLogEntry = {
   outputTokens?: number
   inputImageCount?: number
   outputImageCount?: number
+  videoDurationSeconds?: number
+  outputResolution?: string
   providerCostUsd?: number
   exchangeRate?: number
   providerCostKrw?: number

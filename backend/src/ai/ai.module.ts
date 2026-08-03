@@ -7,8 +7,10 @@ import { AiController } from './ai.controller'
 import { AiService } from './ai.service'
 import { AiUsageLogService } from './ai-usage-log.service'
 import { GeneratedAssetService } from './generated-asset.service'
+import { GenerationJobService } from './generation-job.service'
 import { GeminiImageProvider } from './gemini-image.provider'
 import { GeminiTextProvider } from './gemini-text.provider'
+import { GeminiVideoProvider } from './gemini-video.provider'
 
 @Module({
   imports: [SupabaseModule, AuthModule, CreditsModule, StorageModule],
@@ -17,8 +19,10 @@ import { GeminiTextProvider } from './gemini-text.provider'
     AiService,
     AiUsageLogService,
     GeneratedAssetService,
+    GenerationJobService,
     GeminiTextProvider,
     GeminiImageProvider,
+    GeminiVideoProvider,
   ],
   exports: [AiService],
 })

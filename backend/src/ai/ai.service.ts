@@ -9,14 +9,20 @@ import { CreditsService } from '../credits/credits.service'
 import { StorageService } from '../storage/storage.service'
 import { AiUsageLogService } from './ai-usage-log.service'
 import { GeneratedAssetService } from './generated-asset.service'
+import { GenerationJobService } from './generation-job.service'
+import type { GenerationJobRow } from './generation-job.service'
 import { GeminiImageProvider } from './gemini-image.provider'
 import { GeminiTextProvider } from './gemini-text.provider'
+import { GeminiVideoProvider } from './gemini-video.provider'
+import type { VideoOperationCheckResult } from './gemini-video.provider'
 import type {
   AiFeatureType,
   CharacterImageInput,
   GeneratedImageResult,
+  GenerationJobSummary,
   ImageGenerationOutcome,
   SceneImageInput,
+  SceneVideoInput,
   StoryGenerationInput,
   StoryResult,
   TextGenerationOutcome,
@@ -28,6 +34,7 @@ const WORLD_PROMPT_MAX_LENGTH = 1000
 const STORY_PROMPT_MAX_LENGTH = 500
 const CHARACTER_IMAGE_PROMPT_MAX_LENGTH = 500
 const SCENE_IMAGE_PROMPT_MAX_LENGTH = 500
+const SCENE_VIDEO_PROMPT_MAX_LENGTH = 500
 
 @Injectable()
 export class AiService {
@@ -37,8 +44,10 @@ export class AiService {
     private readonly storageService: StorageService,
     private readonly textProvider: GeminiTextProvider,
     private readonly imageProvider: GeminiImageProvider,
+    private readonly videoProvider: GeminiVideoProvider,
     private readonly usageLogService: AiUsageLogService,
     private readonly generatedAssetService: GeneratedAssetService,
+    private readonly generationJobService: GenerationJobService,
   ) {}
 
   async generateWorld(
@@ -137,6 +146,187 @@ export class AiService {
       pathPrefix: 'generated/scenes',
       run: () => this.imageProvider.generateScene(input, referenceImages),
     })
+  }
+
+  // spec-addendum-backend.md 18/21장 1차 POC: Cloud Tasks 없이 generation_jobs + provider
+  // operation id + 프론트엔드 폴링으로 비동기 구조의 최소 형태만 검증한다. 크레딧 예약/소비
+  // 구조는 이번 POC 범위에서 제외하고, 실제 원가만 ai_usage_logs에 기록한다.
+  async requestSceneVideo(
+    userId: string,
+    input: SceneVideoInput,
+  ): Promise<{ jobId: string; status: GenerationJobSummary['status'] }> {
+    if (!input.prompt?.trim()) {
+      throw new BadRequestException('장면 설명을 입력해주세요.')
+    }
+    if (input.prompt.length > SCENE_VIDEO_PROMPT_MAX_LENGTH) {
+      throw new BadRequestException(
+        `장면 설명은 ${SCENE_VIDEO_PROMPT_MAX_LENGTH}자를 넘을 수 없어요.`,
+      )
+    }
+
+    await this.assertUnderCostLimit()
+
+    const provider = this.configService.getOrThrow<string>('AI_VIDEO_PROVIDER')
+    const model = this.configService.getOrThrow<string>('AI_VIDEO_MODEL')
+
+    const referenceImage = input.referenceImageKey
+      ? await this.loadReferenceImage(userId, input.referenceImageKey)
+      : undefined
+
+    const job = await this.generationJobService.create({
+      userId,
+      featureType: 'SCENE_VIDEO',
+      provider,
+      model,
+      input: {
+        prompt: input.prompt,
+        referenceImageKey: input.referenceImageKey ?? null,
+      },
+    })
+
+    try {
+      const started = await this.videoProvider.startSceneVideo(
+        input,
+        referenceImage,
+      )
+      const updated = await this.generationJobService.update(job.id, {
+        status: 'PROCESSING',
+        provider_operation_id: started.providerOperationId,
+        requested_duration_seconds: started.requestedDurationSeconds,
+        resolution: started.resolution,
+      })
+      return { jobId: updated.id, status: updated.status }
+    } catch (error) {
+      await this.generationJobService.update(job.id, {
+        status: 'FAILED',
+        error_message: error instanceof Error ? error.message : String(error),
+        completed_at: new Date().toISOString(),
+      })
+      throw error
+    }
+  }
+
+  async getSceneVideoJob(
+    userId: string,
+    jobId: string,
+  ): Promise<GenerationJobSummary> {
+    const job = await this.generationJobService.get(userId, jobId)
+
+    if (job.status !== 'PROCESSING' || !job.provider_operation_id) {
+      return toJobSummary(job)
+    }
+
+    const requestedAt = new Date(job.created_at)
+    let checkResult: VideoOperationCheckResult
+    try {
+      checkResult = await this.videoProvider.checkOperation(
+        job.provider_operation_id,
+      )
+    } catch (error) {
+      const completedAt = new Date()
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
+      const updated = await this.generationJobService.update(job.id, {
+        status: 'FAILED',
+        error_message: errorMessage,
+        completed_at: completedAt.toISOString(),
+      })
+      await this.usageLogService.record({
+        userId,
+        generationJobId: job.id,
+        featureType: 'SCENE_VIDEO',
+        provider: job.provider,
+        model: job.model,
+        outputResolution: job.resolution ?? undefined,
+        creditReserved: 0,
+        creditConsumed: 0,
+        status: 'FAILED',
+        errorMessage,
+        requestedAt: requestedAt.toISOString(),
+        completedAt: completedAt.toISOString(),
+        durationMs: completedAt.getTime() - requestedAt.getTime(),
+      })
+      return toJobSummary(updated)
+    }
+
+    if (!checkResult.done) {
+      return toJobSummary(job)
+    }
+
+    if (!checkResult.success) {
+      const completedAt = new Date()
+      const updated = await this.generationJobService.update(job.id, {
+        status: 'FAILED',
+        error_message: checkResult.errorMessage,
+        completed_at: completedAt.toISOString(),
+      })
+      await this.usageLogService.record({
+        userId,
+        generationJobId: job.id,
+        featureType: 'SCENE_VIDEO',
+        provider: job.provider,
+        model: job.model,
+        outputResolution: job.resolution ?? undefined,
+        creditReserved: 0,
+        creditConsumed: 0,
+        status: 'FAILED',
+        errorMessage: checkResult.errorMessage,
+        requestedAt: requestedAt.toISOString(),
+        completedAt: completedAt.toISOString(),
+        durationMs: completedAt.getTime() - requestedAt.getTime(),
+      })
+      return toJobSummary(updated)
+    }
+
+    const extension = checkResult.mimeType === 'video/mp4' ? 'mp4' : 'webm'
+    const { objectKey } = await this.storageService.uploadObject(
+      userId,
+      `generated/videos/${job.id}.${extension}`,
+      checkResult.videoBuffer,
+      checkResult.mimeType,
+    )
+
+    // 이번 POC는 "실제 또는 계산된 비용" 확인이 목적이라 요청한 길이를 실제 길이로 대신 기록한다.
+    // FFmpeg 연동(ffprobe) 전이라 다운로드한 파일의 실제 재생 길이는 아직 측정하지 않는다.
+    const actualDurationSeconds = job.requested_duration_seconds ?? 0
+    const exchangeRate = Number(
+      this.configService.getOrThrow<string>('USD_KRW_EXCHANGE_RATE'),
+    )
+    const providerCostKrw = getVideoCostKrw(actualDurationSeconds)
+    const providerCostUsd = providerCostKrw / exchangeRate
+
+    const completedAt = new Date()
+    const updated = await this.generationJobService.update(job.id, {
+      status: 'SUCCEEDED',
+      result_object_key: objectKey,
+      actual_duration_seconds: actualDurationSeconds,
+      completed_at: completedAt.toISOString(),
+    })
+
+    await this.usageLogService.record({
+      userId,
+      generationJobId: job.id,
+      featureType: 'SCENE_VIDEO',
+      provider: job.provider,
+      model: job.model,
+      videoDurationSeconds: actualDurationSeconds,
+      outputResolution: job.resolution ?? undefined,
+      providerCostUsd,
+      exchangeRate,
+      providerCostKrw,
+      creditReserved: 0,
+      creditConsumed: Math.ceil(providerCostKrw),
+      status: 'SUCCEEDED',
+      requestedAt: requestedAt.toISOString(),
+      completedAt: completedAt.toISOString(),
+      durationMs: completedAt.getTime() - requestedAt.getTime(),
+    })
+
+    const { downloadUrl } = await this.storageService.createDownloadUrl(
+      userId,
+      objectKey,
+    )
+    return { ...toJobSummary(updated), downloadUrl }
   }
 
   private async loadReferenceImage(
@@ -436,4 +626,41 @@ export class AiService {
       )
     }
   }
+}
+
+function toJobSummary(job: GenerationJobRow): GenerationJobSummary {
+  return {
+    jobId: job.id,
+    status: job.status,
+    errorMessage: job.error_message ?? undefined,
+  }
+}
+
+// veo-3.1-lite-generate-preview(720p) 실측 원가(Google AI Studio 청구 내역 기준, 2026-08-03).
+// 초당 단가가 아니라 길이별로 다른 요금이 붙는 것으로 확인돼(4초=100.43원, 8초=290.57원 —
+// 45% 이상 차이가 나서 선형 비례가 아님), 길이별 고정 요금표로 관리한다.
+// 모델이나 해상도가 바뀌면 이 표도 다시 실측해서 갱신해야 한다.
+const VIDEO_DURATION_COST_KRW: Record<number, number> = {
+  4: 100.43,
+  8: 290.57,
+}
+
+function getVideoCostKrw(durationSeconds: number): number {
+  const exact = VIDEO_DURATION_COST_KRW[durationSeconds]
+  if (exact !== undefined) {
+    return exact
+  }
+
+  // 아직 실측 안 된 길이는 원가를 과소 청구하지 않도록 가장 가까운 상위 구간 요금을 쓴다.
+  const knownDurations = Object.keys(VIDEO_DURATION_COST_KRW)
+    .map(Number)
+    .sort((a, b) => a - b)
+  const higherTier =
+    knownDurations.find((duration) => duration >= durationSeconds) ??
+    knownDurations[knownDurations.length - 1]
+
+  console.error(
+    `[AiService] ${durationSeconds}초 영상 원가는 아직 실측되지 않았어요. ${higherTier}초 요금(${VIDEO_DURATION_COST_KRW[higherTier]}원)으로 보수적으로 계산합니다.`,
+  )
+  return VIDEO_DURATION_COST_KRW[higherTier]
 }
