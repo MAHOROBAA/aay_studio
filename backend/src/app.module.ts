@@ -4,12 +4,14 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { SupabaseModule } from './supabase/supabase.module'
 import { AuthModule } from './auth/auth.module'
+import { CreditsModule } from './credits/credits.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     SupabaseModule,
     AuthModule,
+    CreditsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

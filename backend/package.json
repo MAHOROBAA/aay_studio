@@ -22,7 +22,8 @@
     "tester:list": "node --env-file=.env -r ts-node/register scripts/testers/list-testers.ts",
     "tester:get": "node --env-file=.env -r ts-node/register scripts/testers/get-tester.ts",
     "tester:disable": "node --env-file=.env -r ts-node/register scripts/testers/disable-tester.ts",
-    "tester:enable": "node --env-file=.env -r ts-node/register scripts/testers/enable-tester.ts"
+    "tester:enable": "node --env-file=.env -r ts-node/register scripts/testers/enable-tester.ts",
+    "tester:credit": "node --env-file=.env -r ts-node/register scripts/testers/adjust-credit.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1101.0",

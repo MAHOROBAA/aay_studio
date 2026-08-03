@@ -54,6 +54,36 @@ export async function writeAuditLog(params: {
   }
 }
 
+export async function getUserIdByEmail(email: string): Promise<string> {
+  const client = getAdminClient()
+  const { data, error } = await client
+    .from('profiles')
+    .select('id')
+    .eq('email', normalizeEmail(email))
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+  if (!data) {
+    throw new Error('이 이메일로 로그인한 이력이 없습니다(아직 크레딧 계정이 없어요).')
+  }
+  return (data as { id: string }).id
+}
+
+type RpcResult = { data: unknown; error: { message: string } | null }
+type RpcFn = (fnName: string, args: Record<string, unknown>) => Promise<RpcResult>
+
+export async function callCreditRpc(fnName: string, args: Record<string, unknown>): Promise<unknown> {
+  const client = getAdminClient()
+  const rpc = client.rpc.bind(client) as unknown as RpcFn
+  const { data, error } = await rpc(fnName, args)
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
+
 export type BetaTesterStatus = 'invited' | 'active' | 'disabled'
 
 export async function setBetaTesterStatus(email: string, status: 'active' | 'disabled', reason: string) {
