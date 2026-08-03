@@ -8,6 +8,8 @@ import { ConfigService } from '@nestjs/config'
 import { CreditsService } from '../credits/credits.service'
 import { StorageService } from '../storage/storage.service'
 import { AiUsageLogService } from './ai-usage-log.service'
+import { ContentService } from './content.service'
+import { FfmpegConcatService } from './ffmpeg-concat.service'
 import { GeneratedAssetService } from './generated-asset.service'
 import { GenerationJobService } from './generation-job.service'
 import type { GenerationJobRow } from './generation-job.service'
@@ -21,6 +23,8 @@ import type {
   GeneratedImageResult,
   GenerationJobSummary,
   ImageGenerationOutcome,
+  RenderContentInput,
+  RenderContentResult,
   SceneImageInput,
   SceneVideoInput,
   StoryGenerationInput,
@@ -48,6 +52,8 @@ export class AiService {
     private readonly usageLogService: AiUsageLogService,
     private readonly generatedAssetService: GeneratedAssetService,
     private readonly generationJobService: GenerationJobService,
+    private readonly contentService: ContentService,
+    private readonly ffmpegConcatService: FfmpegConcatService,
   ) {}
 
   async generateWorld(
@@ -327,6 +333,113 @@ export class AiService {
       objectKey,
     )
     return { ...toJobSummary(updated), downloadUrl }
+  }
+
+  // spec-addendum-backend.md 18.2/19.2: 장면별 영상을 순서대로 이어붙여 하나의 콘텐츠로 만든다.
+  // 오디오·BGM·자막 삽입은 이번 배치 범위 밖이라 순수 이어붙이기(concat)만 한다.
+  // 재인코딩 없이 짧게 끝나는 작업이라 텍스트/이미지처럼 동기 호출로 처리한다.
+  async renderContent(
+    userId: string,
+    input: RenderContentInput,
+  ): Promise<RenderContentResult> {
+    if (!input.sceneObjectKeys || input.sceneObjectKeys.length < 2) {
+      throw new BadRequestException('합칠 장면 영상은 2개 이상 필요합니다.')
+    }
+
+    const content = await this.contentService.createContent(userId)
+    await this.contentService.createScenes(
+      content.id,
+      input.sceneObjectKeys.map((videoObjectKey, index) => ({
+        sceneOrder: index,
+        videoObjectKey,
+      })),
+    )
+
+    const job = await this.generationJobService.create({
+      userId,
+      featureType: 'FINAL_RENDER',
+      provider: 'ffmpeg',
+      model: 'concat-copy',
+      input: { sceneObjectKeys: input.sceneObjectKeys, contentId: content.id },
+    })
+
+    const requestedAt = new Date()
+    try {
+      const scenes = await Promise.all(
+        input.sceneObjectKeys.map((objectKey) =>
+          this.storageService.getObjectBytes(userId, objectKey),
+        ),
+      )
+      const combined = await this.ffmpegConcatService.concat(
+        scenes.map((scene) => scene.data),
+      )
+      const { objectKey } = await this.storageService.uploadObject(
+        userId,
+        `contents/${content.id}/final.mp4`,
+        combined,
+        'video/mp4',
+      )
+
+      const completedAt = new Date()
+      await this.contentService.update(content.id, {
+        status: 'SUCCEEDED',
+        result_object_key: objectKey,
+        completed_at: completedAt.toISOString(),
+      })
+      await this.generationJobService.update(job.id, {
+        status: 'SUCCEEDED',
+        result_object_key: objectKey,
+        completed_at: completedAt.toISOString(),
+      })
+      await this.usageLogService.record({
+        userId,
+        generationJobId: job.id,
+        featureType: 'FINAL_RENDER',
+        provider: 'ffmpeg',
+        model: 'concat-copy',
+        creditReserved: 0,
+        creditConsumed: 0,
+        status: 'SUCCEEDED',
+        requestedAt: requestedAt.toISOString(),
+        completedAt: completedAt.toISOString(),
+        durationMs: completedAt.getTime() - requestedAt.getTime(),
+      })
+
+      const { downloadUrl } = await this.storageService.createDownloadUrl(
+        userId,
+        objectKey,
+      )
+      return { contentId: content.id, status: 'SUCCEEDED', downloadUrl }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
+      const completedAt = new Date()
+      await this.contentService.update(content.id, {
+        status: 'FAILED',
+        error_message: errorMessage,
+        completed_at: completedAt.toISOString(),
+      })
+      await this.generationJobService.update(job.id, {
+        status: 'FAILED',
+        error_message: errorMessage,
+        completed_at: completedAt.toISOString(),
+      })
+      await this.usageLogService.record({
+        userId,
+        generationJobId: job.id,
+        featureType: 'FINAL_RENDER',
+        provider: 'ffmpeg',
+        model: 'concat-copy',
+        creditReserved: 0,
+        creditConsumed: 0,
+        status: 'FAILED',
+        errorMessage,
+        requestedAt: requestedAt.toISOString(),
+        completedAt: completedAt.toISOString(),
+        durationMs: completedAt.getTime() - requestedAt.getTime(),
+      })
+      return { contentId: content.id, status: 'FAILED', errorMessage }
+    }
   }
 
   private async loadReferenceImage(

@@ -8,6 +8,8 @@ import type {
   GeneratedImageResult,
   GenerationJobStatus,
   GenerationJobSummary,
+  RenderContentInput,
+  RenderContentResult,
   SceneImageInput,
   SceneVideoInput,
   StoryGenerationInput,
@@ -67,5 +69,13 @@ export class AiController {
     @Param('jobId') jobId: string,
   ): Promise<GenerationJobSummary> {
     return this.aiService.getSceneVideoJob(user.id, jobId)
+  }
+
+  @Post('contents/render')
+  renderContent(
+    @CurrentUser() user: RequestUser,
+    @Body() body: RenderContentInput,
+  ): Promise<RenderContentResult> {
+    return this.aiService.renderContent(user.id, body)
   }
 }

@@ -93,6 +93,7 @@ export type AiFeatureType =
   | 'CHARACTER_IMAGE'
   | 'SCENE_IMAGE'
   | 'SCENE_VIDEO'
+  | 'FINAL_RENDER'
 
 export type AiUsageLogEntry = {
   userId: string
@@ -116,4 +117,15 @@ export type AiUsageLogEntry = {
   requestedAt: string
   completedAt: string
   durationMs: number
+}
+
+export type RenderContentInput = {
+  sceneObjectKeys: string[]
+}
+
+export type RenderContentResult = {
+  contentId: string
+  status: 'SUCCEEDED' | 'FAILED'
+  downloadUrl?: string
+  errorMessage?: string
 }

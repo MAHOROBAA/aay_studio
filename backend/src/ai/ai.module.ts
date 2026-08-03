@@ -6,6 +6,8 @@ import { StorageModule } from '../storage/storage.module'
 import { AiController } from './ai.controller'
 import { AiService } from './ai.service'
 import { AiUsageLogService } from './ai-usage-log.service'
+import { ContentService } from './content.service'
+import { FfmpegConcatService } from './ffmpeg-concat.service'
 import { GeneratedAssetService } from './generated-asset.service'
 import { GenerationJobService } from './generation-job.service'
 import { GeminiImageProvider } from './gemini-image.provider'
@@ -20,6 +22,8 @@ import { GeminiVideoProvider } from './gemini-video.provider'
     AiUsageLogService,
     GeneratedAssetService,
     GenerationJobService,
+    ContentService,
+    FfmpegConcatService,
     GeminiTextProvider,
     GeminiImageProvider,
     GeminiVideoProvider,
