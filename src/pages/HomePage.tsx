@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
+import { useSupabaseSession } from '../hooks/useSupabaseSession'
+import { supabase } from '../lib/supabaseClient'
 import styles from './HomePage.module.scss'
 
 const STORY_DESCRIPTION = `원하는 영상 유형을 선택하면
@@ -15,6 +18,16 @@ AI가 장면 구성과 연출 방향을 기획해 드려요.
 원하는 플랫폼에 게시할 수 있어요.`
 
 function HomePage() {
+  const navigate = useNavigate()
+  const { session, isLoading } = useSupabaseSession()
+
+  function handleLogin() {
+    void supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/home` },
+    })
+  }
+
   return (
     <div className={styles.home}>
       <h1 className={styles.heading}>원하는 방식대로 콘텐츠를 만들고, 편집하고, 업로드할 수 있어요.</h1>
@@ -28,9 +41,11 @@ function HomePage() {
           <p className={styles.cardDescription}>{FREE_DESCRIPTION}</p>
         </div>
       </div>
-      <Button type="button" variant="primary">
-        로그인 또는 회원가입
-      </Button>
+      {!isLoading && (
+        <Button type="button" variant="primary" onClick={session ? () => navigate('/create') : handleLogin}>
+          {session ? '콘텐츠 만들기 →' : '로그인 또는 회원가입'}
+        </Button>
+      )}
     </div>
   )
 }
