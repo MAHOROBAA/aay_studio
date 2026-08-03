@@ -43,11 +43,11 @@
 }
 
 .buttons {
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 30px;
 }
 
 .playButton {
@@ -65,6 +65,10 @@
 }
 
 .volumeButton {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   flex-shrink: 0;
   width: 16px;
   height: 16px;
