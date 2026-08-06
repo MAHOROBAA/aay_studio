@@ -201,11 +201,18 @@ publications
 
 credit_accounts
 credit_transactions
-credit_policies
 
 admin_audit_logs
-analytics_events
 ```
+
+**[2026-08-06 갱신]** `credit_policies`, `analytics_events`는 컬럼·용도가 정의되지 않아 위 목록에서
+제외했다. 삭제된 요구사항이 아니라 아래 사유로 보류된 항목이며, 필요 시점에 별도 설계 후 추가한다.
+
+* `credit_policies`: PG·결제 연동 전이고, 운영자가 크레딧 정책을 수정하는 관리 기능도 아직 기획되지
+  않았다. 크레딧 원장은 기존 `credit_accounts`/`credit_transactions` 구조를 그대로 사용한다.
+* `analytics_events`: 현재 확정된 분석 범위는 GA4 이벤트 연동(`spec-addendum-credit.md` 15~22장)뿐이며,
+  서버 DB에 이벤트를 별도로 중복 저장하는 정책은 정해지지 않았다. GA4와 별도로 서버 이벤트 로그가
+  필요하다고 결정되면 그때 목적·보관 기간·컬럼을 정의한다.
 
 결제 관련 테이블은 PG 개발 시점에 추가한다.
 

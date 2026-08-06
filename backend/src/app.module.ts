@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module'
 import { CreditsModule } from './credits/credits.module'
 import { StorageModule } from './storage/storage.module'
 import { AiModule } from './ai/ai.module'
+import { YoutubeModule } from './youtube/youtube.module'
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AiModule } from './ai/ai.module'
     CreditsModule,
     StorageModule,
     AiModule,
+    YoutubeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

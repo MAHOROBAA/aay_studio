@@ -1,29 +1,55 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Dropdown from '../Dropdown/Dropdown'
+import { listYoutubeConnections, openYoutubeOAuthPopup, requestYoutubeConnectUrl, type YoutubeConnectionSummary } from '../../../lib/youtubeApi'
 import styles from './PlatformChannelField.module.scss'
-
-type ChannelOption = {
-  id: string
-  name: string
-}
-
-// TODO: 실제 YouTube 채널 연결/조회는 3차(YouTube 연동)에서 백엔드와 연결한다. 지금은 프론트 목업 상태다.
-const MOCK_CHANNELS: ChannelOption[] = [{ id: 'ch1', name: '마호의유튜브' }]
 
 type PlatformChannelFieldProps = {
   platformName?: string
 }
 
 function PlatformChannelField({ platformName = 'YouTube' }: PlatformChannelFieldProps) {
-  const [isConnected, setConnected] = useState(false)
-  const [channels, setChannels] = useState<ChannelOption[]>([])
+  const [channels, setChannels] = useState<YoutubeConnectionSummary[]>([])
   const [selectedChannelId, setSelectedChannelId] = useState('')
   const [isSelectingChannel, setSelectingChannel] = useState(false)
+  const [isConnecting, setConnecting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  function handleConnect() {
-    setChannels(MOCK_CHANNELS)
-    setSelectedChannelId(MOCK_CHANNELS[0].id)
-    setConnected(true)
+  const isConnected = channels.length > 0
+
+  useEffect(() => {
+    let cancelled = false
+    listYoutubeConnections()
+      .then((result) => {
+        if (cancelled) return
+        setChannels(result)
+        setSelectedChannelId(result[0]?.id ?? '')
+      })
+      .catch(() => {
+        // 목록 조회 실패는 "연결 안 됨" 상태로 조용히 처리한다.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  async function handleConnect() {
+    setErrorMessage('')
+    setConnecting(true)
+    try {
+      const authUrl = await requestYoutubeConnectUrl()
+      const result = await openYoutubeOAuthPopup(authUrl)
+      if (!result.success) {
+        setErrorMessage('YouTube 연결에 실패했어요. 다시 시도해 주세요.')
+        return
+      }
+      const updated = await listYoutubeConnections()
+      setChannels(updated)
+      setSelectedChannelId(updated[0]?.id ?? '')
+    } catch {
+      setErrorMessage('YouTube 연결에 실패했어요. 다시 시도해 주세요.')
+    } finally {
+      setConnecting(false)
+    }
   }
 
   const selectedChannel = channels.find((channel) => channel.id === selectedChannelId)
@@ -36,7 +62,7 @@ function PlatformChannelField({ platformName = 'YouTube' }: PlatformChannelField
             label="채널 선택"
             hideLabel
             className={styles.platformSelect}
-            options={channels.map((channel) => ({ label: channel.name, value: channel.id }))}
+            options={channels.map((channel) => ({ label: channel.channelTitle ?? channel.youtubeChannelId, value: channel.id }))}
             value={selectedChannelId}
             onChange={(event) => {
               setSelectedChannelId(event.target.value)
@@ -47,7 +73,9 @@ function PlatformChannelField({ platformName = 'YouTube' }: PlatformChannelField
           <div className={styles.platformSelect}>
             <span className={styles.platformSelectText}>
               {platformName}
-              {isConnected && selectedChannel && <span className={styles.channelName}>{selectedChannel.name}</span>}
+              {isConnected && selectedChannel && (
+                <span className={styles.channelName}>{selectedChannel.channelTitle ?? selectedChannel.youtubeChannelId}</span>
+              )}
               <span className={styles.platformBadge}>{isConnected ? '연결됨' : '연결 안 됨'}</span>
             </span>
           </div>
@@ -55,12 +83,14 @@ function PlatformChannelField({ platformName = 'YouTube' }: PlatformChannelField
         <button
           type="button"
           className={styles.connectButton}
+          disabled={isConnecting}
           onClick={isConnected ? () => setSelectingChannel(true) : handleConnect}
         >
-          {isConnected ? '채널 변경' : '연결'}
+          {isConnecting ? '연결 중...' : isConnected ? '채널 변경' : '연결'}
         </button>
       </div>
       {!isConnected && <p className={styles.platformHint}>게시 전에 연결할 수 있습니다.</p>}
+      {errorMessage && <p className={styles.platformError}>{errorMessage}</p>}
     </div>
   )
 }
