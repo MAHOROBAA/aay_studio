@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { SupabaseService } from '../supabase/supabase.service'
-import type { AiUsageLogEntry } from './ai.types'
+import type { AiUsageLogEntry } from './ai-usage-log.types'
 
 type InsertResult = { error: { message: string } | null }
 type InsertFn = (payload: Record<string, unknown>) => Promise<InsertResult>

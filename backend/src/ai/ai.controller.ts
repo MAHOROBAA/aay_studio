@@ -2,11 +2,11 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '../auth/auth.guard'
 import { CurrentUser } from '../auth/current-user.decorator'
 import type { RequestUser } from '../auth/auth.types'
+import type { GenerationJobStatus } from '../generation-jobs/generation-job.service'
 import { AiService } from './ai.service'
 import type {
   CharacterImageInput,
   GeneratedImageResult,
-  GenerationJobStatus,
   GenerationJobSummary,
   RenderContentInput,
   RenderContentResult,

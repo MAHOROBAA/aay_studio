@@ -26,6 +26,13 @@ const PLATFORM_INFO_ITEMS = [
 const PUBLISHED_TITLE = '샘플로 입력한 제목입니다.'
 const PUBLISHED_CHANNEL_NAME = '마호의유튜브'
 
+type PublishMode = 'now' | 'scheduled'
+
+const PUBLISH_MODE_HINT: Record<PublishMode, string> = {
+  now: '업로드가 완료되면 바로 공개됩니다.',
+  scheduled: '예약 시간 전까지 비공개로 보관됩니다.',
+}
+
 function CreatePublishPage() {
   const navigate = useNavigate()
   const flow = useCreateFlow()
@@ -33,13 +40,15 @@ function CreatePublishPage() {
   const [isPublishedAlertOpen, setPublishedAlertOpen] = useState(false)
   const [postTitle, setPostTitle] = useState('')
   const [postContent, setPostContent] = useState('')
+  const [publishMode, setPublishMode] = useState<PublishMode>('now')
+  const [scheduledAt, setScheduledAt] = useState('')
 
   function handlePublish() {
     setPublishing(true)
     window.setTimeout(() => {
       setPublishing(false)
       setPublishedAlertOpen(true)
-      trackPublishCompleted({ platform: 'youtube', publishType: 'immediate' })
+      trackPublishCompleted({ platform: 'youtube', publishType: publishMode === 'scheduled' ? 'scheduled' : 'immediate' })
     }, 700)
   }
 
@@ -49,6 +58,7 @@ function CreatePublishPage() {
         isOpen={isPublishedAlertOpen}
         title={postTitle.trim() || PUBLISHED_TITLE}
         channelName={PUBLISHED_CHANNEL_NAME}
+        onGoToLibrary={() => navigate('/library/videos')}
         onGoHome={() => navigate('/home')}
       />
       <h1 className={styles.heading}>게시 설정</h1>
@@ -96,9 +106,27 @@ function CreatePublishPage() {
           <Dropdown
             label="게시 방식"
             className={styles.narrowField}
-            options={[{ label: '지금 게시', value: 'now' }]}
+            options={[
+              { label: '지금 게시', value: 'now' },
+              { label: '예약 게시', value: 'scheduled' },
+            ]}
+            value={publishMode}
+            onChange={(event) => setPublishMode(event.target.value as PublishMode)}
           />
         </div>
+        <p className={styles.publishModeHint}>{PUBLISH_MODE_HINT[publishMode]}</p>
+
+        {publishMode === 'scheduled' && (
+          <div className={styles.row}>
+            <p className={styles.rowLabel}>예약 일시</p>
+            <input
+              type="datetime-local"
+              className={styles.scheduleInput}
+              value={scheduledAt}
+              onChange={(event) => setScheduledAt(event.target.value)}
+            />
+          </div>
+        )}
       </div>
 
       <div className={styles.actions}>

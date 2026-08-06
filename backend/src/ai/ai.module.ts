@@ -3,30 +3,35 @@ import { SupabaseModule } from '../supabase/supabase.module'
 import { AuthModule } from '../auth/auth.module'
 import { CreditsModule } from '../credits/credits.module'
 import { StorageModule } from '../storage/storage.module'
+import { AiUsageLogModule } from '../ai-usage-log/ai-usage-log.module'
+import { GenerationJobsModule } from '../generation-jobs/generation-jobs.module'
+import { TasksModule } from '../tasks/tasks.module'
 import { AiController } from './ai.controller'
 import { AiService } from './ai.service'
-import { AiUsageLogService } from './ai-usage-log.service'
 import { ContentService } from './content.service'
 import { FfmpegConcatService } from './ffmpeg-concat.service'
 import { GeneratedAssetService } from './generated-asset.service'
-import { GenerationJobService } from './generation-job.service'
 import { GeminiImageProvider } from './gemini-image.provider'
 import { GeminiTextProvider } from './gemini-text.provider'
-import { GeminiVideoProvider } from './gemini-video.provider'
 
 @Module({
-  imports: [SupabaseModule, AuthModule, CreditsModule, StorageModule],
+  imports: [
+    SupabaseModule,
+    AuthModule,
+    CreditsModule,
+    StorageModule,
+    AiUsageLogModule,
+    GenerationJobsModule,
+    TasksModule,
+  ],
   controllers: [AiController],
   providers: [
     AiService,
-    AiUsageLogService,
     GeneratedAssetService,
-    GenerationJobService,
     ContentService,
     FfmpegConcatService,
     GeminiTextProvider,
     GeminiImageProvider,
-    GeminiVideoProvider,
   ],
   exports: [AiService],
 })

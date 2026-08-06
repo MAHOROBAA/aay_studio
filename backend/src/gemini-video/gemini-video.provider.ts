@@ -6,7 +6,7 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { GenerateVideosOperation, GoogleGenAI } from '@google/genai'
 import type { Video } from '@google/genai'
-import type { SceneVideoInput } from './ai.types'
+import type { SceneVideoInput } from '../ai/ai.types'
 
 type ReferenceImage = { data: Buffer; mimeType: string }
 

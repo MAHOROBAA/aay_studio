@@ -10,6 +10,7 @@ import CardMenu, { type CardMenuItem } from '../components/common/CardMenu/CardM
 import DownloadIcon from '../components/common/DownloadIcon/DownloadIcon'
 import ClockIcon from '../components/common/ClockIcon/ClockIcon'
 import PublishSettingsIcon from '../components/common/PublishSettingsIcon/PublishSettingsIcon'
+import ExternalLinkIcon from '../components/common/ExternalLinkIcon/ExternalLinkIcon'
 import TrashIcon from '../components/common/TrashIcon/TrashIcon'
 import { RiskConfirmPopup } from '../components/common/Popup'
 import { useViewPreference } from '../hooks/useViewPreference'
@@ -97,9 +98,20 @@ const INITIAL_VIDEOS: VideoCardData[] = [
     dateLine: '게시 실패 · 다시 시도해 주세요.',
     progressPercent: 68,
   },
+  {
+    id: 'v7',
+    status: '업로드 중',
+    method: '자유 영상',
+    ratio: '16:9',
+    durationSeconds: '30초',
+    badgeDuration: '00:30',
+    title: '여우비 내리는 정원',
+    meta: '자유 영상 · 16:9 · 30초',
+    dateLine: 'YouTube에 업로드 중입니다.',
+  },
 ]
 
-const STATUS_OPTIONS: VideoStatus[] = ['게시 완료', '예약 게시', '게시 실패']
+const STATUS_OPTIONS: VideoStatus[] = ['업로드 중', '예약 게시', '게시 완료', '게시 실패']
 const METHOD_OPTIONS = ['스토리 영상', '자유 영상']
 
 function LibraryVideosPage() {
@@ -139,19 +151,22 @@ function LibraryVideosPage() {
         onSelect: () => navigate(`/library/videos/${video.id}/publish-settings`, { state: { status: video.status } }),
       })
     } else if (video.status === '게시 실패') {
+      // 게시 재시도는 기존 게시 설정 폼을 그대로 재사용한다(메뉴명과 진입 목적만 다름).
       items.push({
-        key: 'publish-settings',
-        label: '게시 상태 변경',
+        key: 'retry-publish',
+        label: '다시 시도',
         icon: <PublishSettingsIcon />,
         onSelect: () => navigate(`/library/videos/${video.id}/publish-settings`, { state: { status: video.status } }),
       })
-    } else {
+    } else if (video.status === '게시 완료') {
       items.push({
         key: 'visibility-settings',
         label: '공개 설정 변경',
         icon: <PublishSettingsIcon />,
         onSelect: () => navigate(`/library/videos/${video.id}/publish-settings`, { state: { status: video.status } }),
       })
+      // TODO: 실제 게시물 URL은 YouTube 연동(3차) 이후 백엔드에서 받아온다. 지금은 이동 동작이 없다.
+      items.push({ key: 'view-on-youtube', label: 'YouTube에서 보기', icon: <ExternalLinkIcon />, onSelect: () => {} })
     }
 
     items.push({ key: 'delete', label: '삭제', icon: <TrashIcon />, danger: true, onSelect: () => setDeleteTarget(video) })

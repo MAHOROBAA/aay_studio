@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Dropdown from '../components/common/Dropdown/Dropdown'
 import Stepper from '../components/common/Stepper/Stepper'
+import PlatformChannelField from '../components/common/PlatformChannelField/PlatformChannelField'
 import styles from './CreateFreePage.module.scss'
 
 function CreateFreePage() {
@@ -23,29 +24,7 @@ function CreateFreePage() {
 
           <div className={styles.row}>
             <p className={styles.rowLabel}>게시 플랫폼</p>
-            <div className={styles.platformField}>
-              <div className={styles.platformRow}>
-                <button type="button" className={styles.platformSelect}>
-                  <span className={styles.platformSelectText}>
-                    YouTube
-                    <span className={styles.platformBadge}>연결 안 됨</span>
-                  </span>
-                  <svg className={styles.chevron} viewBox="0 0 13.3333 13.3333" fill="none" aria-hidden="true">
-                    <path
-                      d="M9.8313 5.08433L6.66666 8.24904L3.50195 5.08433"
-                      stroke="currentColor"
-                      strokeWidth="0.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-                <button type="button" className={styles.connectButton}>
-                  연결
-                </button>
-              </div>
-              <p className={styles.platformHint}>게시 전에 연결할 수 있습니다.</p>
-            </div>
+            <PlatformChannelField platformName="YouTube" />
           </div>
 
           <div className={styles.row}>

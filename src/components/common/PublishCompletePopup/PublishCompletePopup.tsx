@@ -7,10 +7,11 @@ type PublishCompletePopupProps = {
   isOpen: boolean
   title: string
   channelName: string
+  onGoToLibrary: () => void
   onGoHome: () => void
 }
 
-function PublishCompletePopup({ isOpen, title, channelName, onGoHome }: PublishCompletePopupProps) {
+function PublishCompletePopup({ isOpen, title, channelName, onGoToLibrary, onGoHome }: PublishCompletePopupProps) {
   if (!isOpen) {
     return null
   }
@@ -19,7 +20,7 @@ function PublishCompletePopup({ isOpen, title, channelName, onGoHome }: PublishC
     <div className={popupStyles.dim}>
       <div className={popupStyles.card} role="dialog" aria-modal="true">
         <p className={popupStyles.brand}>Aaaay!</p>
-        <h2 className={popupStyles.title}>게시가 완료되었습니다.</h2>
+        <h2 className={popupStyles.title}>게시 설정이 완료되었습니다.</h2>
         <div className={styles.infoBox}>
           <div className={styles.infoTable}>
             <div className={styles.infoLabels}>
@@ -38,8 +39,8 @@ function PublishCompletePopup({ isOpen, title, channelName, onGoHome }: PublishC
           </div>
         </div>
         <div className={styles.actions}>
-          <Button type="button" variant="secondary">
-            게시물 보기
+          <Button type="button" variant="secondary" onClick={onGoToLibrary}>
+            라이브러리로
           </Button>
           <Button type="button" variant="primary" onClick={onGoHome}>
             홈으로

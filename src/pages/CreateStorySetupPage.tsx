@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../components/common/Button/Button'
 import Dropdown from '../components/common/Dropdown/Dropdown'
 import CharacterCreatePopup, { type NewCharacter } from '../components/common/CharacterCreatePopup/CharacterCreatePopup'
+import PlatformChannelField from '../components/common/PlatformChannelField/PlatformChannelField'
 import { AlertPopup } from '../components/common/Popup'
 import styles from './CreateStorySetupPage.module.scss'
 
@@ -14,6 +15,7 @@ const STEPS = [
   { id: 'section-character', label: '캐릭터' },
   { id: 'section-world', label: '세계관' },
   { id: 'section-story', label: '스토리' },
+  { id: 'section-settings', label: '설정' },
 ]
 
 const EXISTING_WORLDS = [
@@ -241,6 +243,23 @@ function CreateStorySetupPage() {
               </div>
             </div>
           )}
+        </section>
+
+        <section id="section-settings" className={styles.section}>
+          <h2 className={styles.sectionTitle}>설정</h2>
+          <div className={styles.row}>
+            <p className={styles.rowLabel}>게시 플랫폼</p>
+            <PlatformChannelField platformName="YouTube" />
+          </div>
+          <div className={styles.row}>
+            <p className={styles.rowLabel}>영상 길이</p>
+            <Dropdown
+              label="영상 길이"
+              hideLabel
+              className={styles.worldSelect}
+              options={[{ label: '20초', value: '20' }]}
+            />
+          </div>
         </section>
 
         <div className={styles.actions}>

@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { SupabaseService } from '../supabase/supabase.service'
-import type { GenerationJobStatus } from './ai.types'
+
+export type GenerationJobStatus =
+  'PENDING' | 'QUEUED' | 'PROCESSING' | 'SUCCEEDED' | 'FAILED'
 
 export type GenerationJobRow = {
   id: string
@@ -15,6 +17,7 @@ export type GenerationJobRow = {
   actual_duration_seconds: number | null
   resolution: string | null
   result_object_key: string | null
+  poll_attempt: number
   error_code: string | null
   error_message: string | null
   created_at: string
@@ -64,6 +67,7 @@ export class GenerationJobService {
     return data as GenerationJobRow
   }
 
+  // 사용자 소유 확인이 필요한 프론트엔드 조회 경로용.
   async get(userId: string, jobId: string): Promise<GenerationJobRow> {
     const client = this.supabaseService.getAdminClient()
     const { data, error } = await client
@@ -80,6 +84,21 @@ export class GenerationJobService {
       throw new NotFoundException('생성 작업을 찾을 수 없습니다.')
     }
     return data
+  }
+
+  // Cloud Tasks Worker용 — 사용자 컨텍스트가 없으므로 소유자 필터 없이 조회한다.
+  async getById(jobId: string): Promise<GenerationJobRow | null> {
+    const client = this.supabaseService.getAdminClient()
+    const { data, error } = await client
+      .from('generation_jobs')
+      .select('*')
+      .eq('id', jobId)
+      .maybeSingle()
+
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data ?? null
   }
 
   async update(
