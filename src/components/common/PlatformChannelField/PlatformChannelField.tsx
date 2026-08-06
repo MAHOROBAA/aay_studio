@@ -12,6 +12,7 @@ function PlatformChannelField({ platformName = 'YouTube' }: PlatformChannelField
   const [selectedChannelId, setSelectedChannelId] = useState('')
   const [isSelectingChannel, setSelectingChannel] = useState(false)
   const [isConnecting, setConnecting] = useState(false)
+  const [isCheckingConnection, setCheckingConnection] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
 
   const isConnected = channels.length > 0
@@ -26,6 +27,11 @@ function PlatformChannelField({ platformName = 'YouTube' }: PlatformChannelField
       })
       .catch(() => {
         // 목록 조회 실패는 "연결 안 됨" 상태로 조용히 처리한다.
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setCheckingConnection(false)
+        }
       })
     return () => {
       cancelled = true
@@ -83,10 +89,10 @@ function PlatformChannelField({ platformName = 'YouTube' }: PlatformChannelField
         <button
           type="button"
           className={styles.connectButton}
-          disabled={isConnecting}
+          disabled={isConnecting || isCheckingConnection}
           onClick={isConnected ? () => setSelectingChannel(true) : handleConnect}
         >
-          {isConnecting ? '연결 중...' : isConnected ? '채널 변경' : '연결'}
+          {isCheckingConnection ? '확인중' : isConnecting ? '연결 중...' : isConnected ? '채널 변경' : '연결'}
         </button>
       </div>
       {!isConnected && <p className={styles.platformHint}>게시 전에 연결할 수 있습니다.</p>}
