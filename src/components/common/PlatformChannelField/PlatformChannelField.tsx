@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Dropdown from '../Dropdown/Dropdown'
-import { listYoutubeConnections, openYoutubeOAuthPopup, requestYoutubeConnectUrl, type YoutubeConnectionSummary } from '../../../lib/youtubeApi'
+import { listYoutubeConnections, openYoutubeOAuthPopup, requestYoutubeConnectStartUrl, type YoutubeConnectionSummary } from '../../../lib/youtubeApi'
 import styles from './PlatformChannelField.module.scss'
 
 type PlatformChannelFieldProps = {
@@ -36,8 +36,8 @@ function PlatformChannelField({ platformName = 'YouTube' }: PlatformChannelField
     setErrorMessage('')
     setConnecting(true)
     try {
-      const authUrl = await requestYoutubeConnectUrl()
-      const result = await openYoutubeOAuthPopup(authUrl)
+      const startUrl = await requestYoutubeConnectStartUrl()
+      const result = await openYoutubeOAuthPopup(startUrl)
       if (!result.success) {
         setErrorMessage('YouTube 연결에 실패했어요. 다시 시도해 주세요.')
         return

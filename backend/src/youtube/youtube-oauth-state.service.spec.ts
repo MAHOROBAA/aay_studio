@@ -117,6 +117,77 @@ describe('YoutubeOAuthStateService', () => {
     )
   })
 
+  describe('connect ticket', () => {
+    it('발급한 티켓에서 원래 userId/frontendOrigin을 복원한다', () => {
+      const service = buildService()
+
+      const ticket = service.signConnectTicket({
+        userId: 'user-123',
+        frontendOrigin: 'https://a.example',
+      })
+
+      expect(service.verifyConnectTicket(ticket)).toEqual({
+        userId: 'user-123',
+        frontendOrigin: 'https://a.example',
+      })
+    })
+
+    it('서명이 변조된 티켓은 거부한다', () => {
+      const service = buildService()
+      const ticket = service.signConnectTicket({
+        userId: 'user-123',
+        frontendOrigin: 'https://a.example',
+      })
+      const [payload] = ticket.split('.')
+
+      expect(() =>
+        service.verifyConnectTicket(`${payload}.tampered-signature`),
+      ).toThrow(UnauthorizedException)
+    })
+
+    it('만료된 티켓은 거부한다(state보다 훨씬 짧은 수명)', () => {
+      const service = buildService()
+      const realNow = Date.now
+      Date.now = () => realNow() - 2 * 60 * 1000 // 2분 전에 발급된 것처럼
+      const ticket = service.signConnectTicket({
+        userId: 'user-123',
+        frontendOrigin: 'https://a.example',
+      })
+      Date.now = realNow
+
+      expect(() => service.verifyConnectTicket(ticket)).toThrow(
+        UnauthorizedException,
+      )
+    })
+
+    // state는 URL 쿼리에 노출되는 값이라 ticket보다 유출 가능성이 높다. purpose 구분이
+    // 없으면 유출된 state를 ticket 자리에 그대로 넣어 새 연결 흐름을 다시 트리거할 수 있어,
+    // 서명 payload 안에 용도를 명시하고 서로 바꿔쓸 수 없게 막는다.
+    it('state로 서명된 값은 ticket 검증을 통과하지 못한다', () => {
+      const service = buildService()
+      const { state } = service.sign({
+        userId: 'user-123',
+        frontendOrigin: 'https://a.example',
+      })
+
+      expect(() => service.verifyConnectTicket(state)).toThrow(
+        UnauthorizedException,
+      )
+    })
+
+    it('ticket으로 서명된 값은 state 검증을 통과하지 못한다', () => {
+      const service = buildService()
+      const ticket = service.signConnectTicket({
+        userId: 'user-123',
+        frontendOrigin: 'https://a.example',
+      })
+
+      expect(() =>
+        service.verify({ state: ticket, cookieNonce: 'anything' }),
+      ).toThrow(UnauthorizedException)
+    })
+  })
+
   describe('peekUnverifiedFrontendOrigin', () => {
     it('서명 검증 없이 state 안의 frontendOrigin을 읽어온다', () => {
       const service = buildService()

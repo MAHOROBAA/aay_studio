@@ -2,6 +2,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Query,
   Req,
@@ -26,19 +27,57 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production'
 
 @Controller('youtube')
 export class YoutubeController {
+  private readonly logger = new Logger(YoutubeController.name)
+
   constructor(private readonly youtubeService: YoutubeService) {}
 
+  // 이 요청은 프론트(다른 origin)에서 fetch로 호출한다 — Bearer 인증은 여기서 확인하고,
+  // 실제 쿠키 설정은 first-party top-level 이동인 /connect/start에서 한다. cross-origin
+  // fetch 응답으로 쿠키를 심으면 브라우저의 서드파티 쿠키 차단에 걸릴 수 있어 이렇게 나눴다.
   @Get('connect')
   @UseGuards(AuthGuard)
   connect(
     @CurrentUser() user: RequestUser,
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ): { authUrl: string } {
-    const { authUrl, nonce } = this.youtubeService.buildConnectUrl(
-      user.id,
-      req.headers.origin,
-    )
+  ): { ticket: string } {
+    return {
+      ticket: this.youtubeService.issueConnectTicket(
+        user.id,
+        req.headers.origin,
+      ),
+    }
+  }
+
+  // 프론트가 팝업으로 이 경로에 직접(top-level) 이동시킨다 — 같은 도메인으로의 일반 페이지
+  // 이동이라 여기서 심는 쿠키는 first-party로 취급돼 브라우저에 정상적으로 저장된다.
+  @Get('connect/start')
+  connectStart(
+    @Query('ticket') ticket: string | undefined,
+    @Res() res: Response,
+  ): void {
+    let authUrl: string
+    let nonce: string
+    try {
+      if (!ticket) {
+        throw new Error('ticket query 파라미터가 없어요.')
+      }
+      ;({ authUrl, nonce } =
+        this.youtubeService.buildConnectUrlFromTicket(ticket))
+    } catch (error) {
+      this.logger.warn(
+        `[connect/start] 티켓 검증 실패: ${error instanceof Error ? error.message : String(error)}`,
+      )
+      res
+        .type('html')
+        .send(
+          this.renderResultPage(
+            false,
+            null,
+            this.youtubeService.resolveNotifyOrigin(undefined),
+          ),
+        )
+      return
+    }
 
     // 연결을 시작한 바로 그 브라우저에서 콜백이 돌아왔는지 확인하는 값 — 콜백 경로에서만
     // 전송되도록 path를 좁혀서 노출 범위를 최소화한다.
@@ -50,7 +89,7 @@ export class YoutubeController {
       path: OAUTH_CALLBACK_PATH,
     })
 
-    return { authUrl }
+    res.redirect(authUrl)
   }
 
   // Google이 사용자 브라우저를 top-level 리다이렉트로 이 경로로 돌려보낸다 — Authorization
@@ -75,6 +114,9 @@ export class YoutubeController {
     })
 
     if (oauthError || !code || !state) {
+      this.logger.warn(
+        `[oauth/callback] code/state 누락 또는 Google 오류: ${oauthError ?? '(code/state 없음)'}`,
+      )
       res
         .type('html')
         .send(
@@ -93,7 +135,12 @@ export class YoutubeController {
       res
         .type('html')
         .send(this.renderResultPage(true, channelTitle, frontendOrigin))
-    } catch {
+    } catch (error) {
+      // code/state 원문(사용자 식별 정보 포함)은 로그에 남기지 않고, 실패 원인만 남긴다.
+      this.logger.error(
+        '[oauth/callback] 처리 실패',
+        error instanceof Error ? error.stack : String(error),
+      )
       res
         .type('html')
         .send(

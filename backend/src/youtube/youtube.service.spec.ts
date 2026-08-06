@@ -29,6 +29,8 @@ type MockedStateService = {
   sign: jest.Mock
   verify: jest.Mock
   peekUnverifiedFrontendOrigin: jest.Mock
+  signConnectTicket: jest.Mock
+  verifyConnectTicket: jest.Mock
 }
 type MockedTokenEncryptionService = { encrypt: jest.Mock; decrypt: jest.Mock }
 
@@ -66,6 +68,8 @@ describe('YoutubeService', () => {
       sign: jest.fn(),
       verify: jest.fn(),
       peekUnverifiedFrontendOrigin: jest.fn(),
+      signConnectTicket: jest.fn(),
+      verifyConnectTicket: jest.fn(),
     }
     tokenEncryptionService = { encrypt: jest.fn(), decrypt: jest.fn() }
     fetchMock = jest.fn()
@@ -79,8 +83,37 @@ describe('YoutubeService', () => {
     )
   })
 
-  describe('buildConnectUrl', () => {
-    it('허용된 요청 origin이면 그대로 state에 담아 서명한다', () => {
+  describe('issueConnectTicket', () => {
+    it('허용된 요청 origin이면 그대로 티켓에 담아 서명한다', () => {
+      stateService.signConnectTicket.mockReturnValue('signed-ticket')
+
+      const ticket = service.issueConnectTicket('user-123', DEV_ORIGIN)
+
+      expect(stateService.signConnectTicket).toHaveBeenCalledWith({
+        userId: 'user-123',
+        frontendOrigin: DEV_ORIGIN,
+      })
+      expect(ticket).toBe('signed-ticket')
+    })
+
+    it('허용 목록에 없는 origin이면 운영 origin으로 대체한다', () => {
+      stateService.signConnectTicket.mockReturnValue('signed-ticket')
+
+      service.issueConnectTicket('user-123', 'https://evil.example')
+
+      expect(stateService.signConnectTicket).toHaveBeenCalledWith({
+        userId: 'user-123',
+        frontendOrigin: PROD_ORIGIN,
+      })
+    })
+  })
+
+  describe('buildConnectUrlFromTicket', () => {
+    it('티켓을 검증해 사용자를 확인하고 OAuth state를 새로 서명한다', () => {
+      stateService.verifyConnectTicket.mockReturnValue({
+        userId: 'user-123',
+        frontendOrigin: DEV_ORIGIN,
+      })
       stateService.sign.mockReturnValue({
         state: 'signed-state',
         nonce: 'nonce-1',
@@ -89,8 +122,11 @@ describe('YoutubeService', () => {
         'https://accounts.google.com/o/oauth2/auth?mock=1',
       )
 
-      const result = service.buildConnectUrl('user-123', DEV_ORIGIN)
+      const result = service.buildConnectUrlFromTicket('signed-ticket')
 
+      expect(stateService.verifyConnectTicket).toHaveBeenCalledWith(
+        'signed-ticket',
+      )
       expect(stateService.sign).toHaveBeenCalledWith({
         userId: 'user-123',
         frontendOrigin: DEV_ORIGIN,
@@ -104,26 +140,21 @@ describe('YoutubeService', () => {
       )
       expect(result).toEqual({
         authUrl: 'https://accounts.google.com/o/oauth2/auth?mock=1',
-        state: 'signed-state',
         nonce: 'nonce-1',
       })
     })
 
-    it('허용 목록에 없는 origin이면 운영 origin으로 대체한다', () => {
-      stateService.sign.mockReturnValue({
-        state: 'signed-state',
-        nonce: 'nonce-1',
+    it('티켓 검증에 실패하면 예외를 그대로 전파한다', () => {
+      stateService.verifyConnectTicket.mockImplementation(() => {
+        throw new UnauthorizedException(
+          '요청이 만료됐어요. 다시 시도해 주세요.',
+        )
       })
-      generateAuthUrlMock.mockReturnValue(
-        'https://accounts.google.com/o/oauth2/auth?mock=1',
+
+      expect(() => service.buildConnectUrlFromTicket('bad-ticket')).toThrow(
+        UnauthorizedException,
       )
-
-      service.buildConnectUrl('user-123', 'https://evil.example')
-
-      expect(stateService.sign).toHaveBeenCalledWith({
-        userId: 'user-123',
-        frontendOrigin: PROD_ORIGIN,
-      })
+      expect(stateService.sign).not.toHaveBeenCalled()
     })
   })
 

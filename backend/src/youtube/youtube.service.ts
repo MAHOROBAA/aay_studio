@@ -2,10 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { OAuth2Client } from 'google-auth-library'
 import { YoutubeConnectionService } from './youtube-connection.service'
-import {
-  YoutubeOAuthStateService,
-  type SignedOAuthState,
-} from './youtube-oauth-state.service'
+import { YoutubeOAuthStateService } from './youtube-oauth-state.service'
 import { YoutubeTokenEncryptionService } from './youtube-token-encryption.service'
 import type {
   YoutubeChannelInfo,
@@ -27,11 +24,26 @@ export class YoutubeService {
     private readonly tokenEncryptionService: YoutubeTokenEncryptionService,
   ) {}
 
-  buildConnectUrl(
+  // "/youtube/connect"(Bearer 인증)에서 발급한다. 이 티켓을 브라우저가 top-level 이동으로
+  // "/youtube/connect/start"에 가져가면, 그 요청은 인증 헤더를 실을 수 없는 대신 이 짧은
+  // 서명 티켓 하나로 사용자를 식별한다.
+  issueConnectTicket(
     userId: string,
     requestOrigin: string | undefined,
-  ): SignedOAuthState & { authUrl: string } {
+  ): string {
     const frontendOrigin = this.resolveAllowedOrigin(requestOrigin)
+    return this.stateService.signConnectTicket({ userId, frontendOrigin })
+  }
+
+  // 티켓을 검증해 사용자를 확인하고, OAuth state를 새로 서명해 Google 인증 URL을 만든다.
+  // 쿠키(nonce)는 이 응답을 받은 컨트롤러가 first-party top-level 응답으로 직접 설정해야
+  // 서드파티 쿠키 차단에 걸리지 않는다 — 그래서 여기서는 값만 돌려주고 컨트롤러가 쿠키를 심는다.
+  buildConnectUrlFromTicket(ticket: string): {
+    authUrl: string
+    nonce: string
+  } {
+    const { userId, frontendOrigin } =
+      this.stateService.verifyConnectTicket(ticket)
     const { state, nonce } = this.stateService.sign({ userId, frontendOrigin })
 
     const client = this.createOAuthClient()
@@ -43,7 +55,7 @@ export class YoutubeService {
       state,
     })
 
-    return { authUrl, state, nonce }
+    return { authUrl, nonce }
   }
 
   // OAuth 콜백에서 code/state/브라우저 쿠키 nonce를 처리하고, 연결된 채널 이름과 결과를

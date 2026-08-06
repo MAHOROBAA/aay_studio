@@ -23,8 +23,6 @@ async function authorizedFetch(path: string, init?: RequestInit): Promise<Respon
 
   const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${path}`, {
     ...init,
-    // /youtube/connect가 내려주는 HttpOnly 연결 쿠키를 저장/전송하려면 필요하다.
-    credentials: 'include',
     headers: { ...init?.headers, Authorization: `Bearer ${accessToken}` },
   })
   if (!response.ok) {
@@ -33,10 +31,13 @@ async function authorizedFetch(path: string, init?: RequestInit): Promise<Respon
   return response
 }
 
-export async function requestYoutubeConnectUrl(): Promise<string> {
+// 짧은 서명 티켓을 받아 "/youtube/connect/start" URL을 만든다. 팝업이 이 URL로 직접
+// top-level 이동해야 백엔드가 심는 연결 쿠키가 first-party로 정상 저장된다(cross-origin
+// fetch 응답으로 심는 쿠키는 브라우저의 서드파티 쿠키 차단에 걸릴 수 있다).
+export async function requestYoutubeConnectStartUrl(): Promise<string> {
   const response = await authorizedFetch('/youtube/connect')
-  const body = (await response.json()) as { authUrl: string }
-  return body.authUrl
+  const body = (await response.json()) as { ticket: string }
+  return `${import.meta.env.VITE_API_BASE_URL}/youtube/connect/start?ticket=${encodeURIComponent(body.ticket)}`
 }
 
 export async function listYoutubeConnections(): Promise<YoutubeConnectionSummary[]> {
@@ -48,11 +49,12 @@ export async function disconnectYoutubeConnection(connectionId: string): Promise
   await authorizedFetch(`/youtube/connections/${connectionId}`, { method: 'DELETE' })
 }
 
-// OAuth 동의 화면을 팝업으로 띄우고, 백엔드 콜백이 돌려주는 postMessage 결과를 기다린다.
-// 진행 중이던 제작 플로우 화면(Step 상태)을 잃지 않기 위해 top-level 리다이렉트 대신 팝업을 쓴다.
-export function openYoutubeOAuthPopup(authUrl: string): Promise<YoutubeOAuthPopupResult> {
+// startUrl(= "/youtube/connect/start?ticket=...")을 팝업으로 띄우고, 백엔드 콜백이
+// 돌려주는 postMessage 결과를 기다린다. 진행 중이던 제작 플로우 화면(Step 상태)을 잃지 않기
+// 위해 top-level 리다이렉트 대신 팝업을 쓴다.
+export function openYoutubeOAuthPopup(startUrl: string): Promise<YoutubeOAuthPopupResult> {
   return new Promise((resolve) => {
-    const popup = window.open(authUrl, 'aay-youtube-oauth', 'width=520,height=680')
+    const popup = window.open(startUrl, 'aay-youtube-oauth', 'width=520,height=680')
     if (!popup) {
       resolve({ success: false, channelTitle: null })
       return
